@@ -988,49 +988,6 @@
                         <input type="hidden" id="triage-tipo" value="">
                     </div>
 
-                    <!-- Mobile/Tablet: search modal -->
-                    <div class="modal-backdrop combo-modal" id="combo-tipo-modal">
-                        <div class="modal" style="max-width:480px; max-height:80vh; display:flex; flex-direction:column;">
-                            <div class="modal-header">
-                                <h3>Tipo de Atendimento</h3>
-                                <button class="modal-close" onclick="closeComboModal('tipo')">
-                                    <span class="material-symbols-outlined">close</span>
-                                </button>
-                            </div>
-                            <div style="padding:12px 20px 0;">
-                                <div class="combo-search-input-wrap">
-                                    <span class="material-symbols-outlined">search</span>
-                                    <input type="text" class="combo-search-input" id="combo-tipo-modal-search" placeholder="Pesquisar tipo de atendimento..." oninput="filterComboModal('tipo')">
-                                </div>
-                            </div>
-                            <div class="modal-body" style="flex:1; overflow-y:auto; padding-top:8px;">
-                                <div class="combo-modal-list" id="combo-tipo-modal-list">
-                                    <div class="combo-modal-item" data-value="1" data-urgencia="Não grave" data-sla="10" onclick="selectComboModal('tipo', this)">
-                                        <div class="combo-modal-item-name">Assistência de enfermagem</div>
-                                        <div class="combo-modal-item-meta"><span class="status-pill status-routine" style="font-size:10px;"><span class="dot"></span>Não grave</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: 10 min</span></div>
-                                    </div>
-                                    <div class="combo-modal-item" data-value="2" data-urgencia="Urgência" data-sla="0" onclick="selectComboModal('tipo', this)">
-                                        <div class="combo-modal-item-name">Código de Emergência</div>
-                                        <div class="combo-modal-item-meta"><span class="status-pill status-urgent" style="font-size:10px;"><span class="dot"></span>Urgência</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: Imediato</span></div>
-                                    </div>
-                                    <div class="combo-modal-item" data-value="3" data-urgencia="Não grave" data-sla="10" onclick="selectComboModal('tipo', this)">
-                                        <div class="combo-modal-item-name">Conforto e bem estar</div>
-                                        <div class="combo-modal-item-meta"><span class="status-pill status-routine" style="font-size:10px;"><span class="dot"></span>Não grave</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: 10 min</span></div>
-                                    </div>
-                                    <div class="combo-modal-item" data-value="4" data-urgencia="Incidente" data-sla="5" onclick="selectComboModal('tipo', this)">
-                                        <div class="combo-modal-item-name">Incidente com medicamentos</div>
-                                        <div class="combo-modal-item-meta"><span class="status-pill status-urgent" style="font-size:10px;"><span class="dot"></span>Incidente</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: 5 min</span></div>
-                                    </div>
-                                    <div class="combo-modal-item" data-value="5" data-urgencia="Emergência" data-sla="3" onclick="selectComboModal('tipo', this)">
-                                        <div class="combo-modal-item-name">Incidente de manejamento</div>
-                                        <div class="combo-modal-item-meta"><span class="status-pill status-emergency" style="font-size:10px;"><span class="dot"></span>Emergência</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: 3 min</span></div>
-                                    </div>
-                                </div>
-                                <div class="combo-empty" id="combo-tipo-modal-empty" style="display:none;">Nenhum resultado encontrado</div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div id="triage-urgencia-info" style="display:none; margin-bottom:16px;">
                         <div style="display:flex; gap:12px;">
                             <div style="flex:1; padding:10px 14px; background:var(--background); border-radius:var(--radius-sm);">
@@ -1076,41 +1033,6 @@
                         <input type="hidden" id="triage-proc" value="">
                     </div>
 
-                    <!-- Mobile/Tablet: search modal for Procedimento -->
-                    <div class="modal-backdrop combo-modal" id="combo-proc-modal">
-                        <div class="modal" style="max-width:480px; max-height:80vh; display:flex; flex-direction:column;">
-                            <div class="modal-header">
-                                <h3>Procedimento</h3>
-                                <button class="modal-close" onclick="closeComboModal('proc')">
-                                    <span class="material-symbols-outlined">close</span>
-                                </button>
-                            </div>
-                            <div style="padding:12px 20px 0;">
-                                <div class="combo-search-input-wrap">
-                                    <span class="material-symbols-outlined">search</span>
-                                    <input type="text" class="combo-search-input" id="combo-proc-modal-search" placeholder="Pesquisar procedimento..." oninput="filterComboModal('proc')">
-                                </div>
-                            </div>
-                            <div class="modal-body" style="flex:1; overflow-y:auto; padding-top:8px;">
-                                <div class="combo-modal-list" id="combo-proc-modal-list">
-                                    <div class="combo-modal-item" data-value="1" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Verificar sinais vitais</div></div>
-                                    <div class="combo-modal-item" data-value="2" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Troca de soro</div></div>
-                                    <div class="combo-modal-item" data-value="3" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Administrar medicação</div></div>
-                                    <div class="combo-modal-item" data-value="4" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Curativo</div></div>
-                                    <div class="combo-modal-item" data-value="5" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Coleta de exames</div></div>
-                                    <div class="combo-modal-item" data-value="6" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Aferição de pressão arterial</div></div>
-                                    <div class="combo-modal-item" data-value="7" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Aferição de temperatura</div></div>
-                                    <div class="combo-modal-item" data-value="8" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Aspiração de vias aéreas</div></div>
-                                    <div class="combo-modal-item" data-value="9" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Cateterismo vesical</div></div>
-                                    <div class="combo-modal-item" data-value="10" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Drenagem de ferida</div></div>
-                                    <div class="combo-modal-item" data-value="11" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Oxigenoterapia</div></div>
-                                    <div class="combo-modal-item" data-value="12" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Reposicionamento do paciente</div></div>
-                                </div>
-                                <div class="combo-empty" id="combo-proc-modal-empty" style="display:none;">Nenhum resultado encontrado</div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="form-group">
                         <label class="form-label">Observações</label>
                         <textarea class="form-input form-textarea" placeholder="Observações sobre a triagem..."></textarea>
@@ -1134,6 +1056,83 @@
         <div class="pip-thumbnail" id="pipThumbnail" onclick="togglePip()">
             <div class="thumb-avatar" id="pip-thumb-avatar">MS</div>
             <div class="thumb-label">Toque para expandir</div>
+        </div>
+    </div>
+
+    <!-- ==================== COMBO SEARCH MODALS (fora do triage-overlay para z-index correto no mobile) ==================== -->
+    <div class="modal-backdrop combo-modal" id="combo-tipo-modal">
+        <div class="modal" style="max-width:480px; max-height:80vh; display:flex; flex-direction:column;">
+            <div class="modal-header">
+                <h3>Tipo de Atendimento</h3>
+                <button class="modal-close" onclick="closeComboModal('tipo')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div style="padding:12px 20px 0;">
+                <div class="combo-search-input-wrap">
+                    <span class="material-symbols-outlined">search</span>
+                    <input type="text" class="combo-search-input" id="combo-tipo-modal-search" placeholder="Pesquisar tipo de atendimento..." oninput="filterComboModal('tipo')">
+                </div>
+            </div>
+            <div class="modal-body" style="flex:1; overflow-y:auto; padding-top:8px;">
+                <div class="combo-modal-list" id="combo-tipo-modal-list">
+                    <div class="combo-modal-item" data-value="1" data-urgencia="Não grave" data-sla="10" onclick="selectComboModal('tipo', this)">
+                        <div class="combo-modal-item-name">Assistência de enfermagem</div>
+                        <div class="combo-modal-item-meta"><span class="status-pill status-routine" style="font-size:10px;"><span class="dot"></span>Não grave</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: 10 min</span></div>
+                    </div>
+                    <div class="combo-modal-item" data-value="2" data-urgencia="Urgência" data-sla="0" onclick="selectComboModal('tipo', this)">
+                        <div class="combo-modal-item-name">Código de Emergência</div>
+                        <div class="combo-modal-item-meta"><span class="status-pill status-urgent" style="font-size:10px;"><span class="dot"></span>Urgência</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: Imediato</span></div>
+                    </div>
+                    <div class="combo-modal-item" data-value="3" data-urgencia="Não grave" data-sla="10" onclick="selectComboModal('tipo', this)">
+                        <div class="combo-modal-item-name">Conforto e bem estar</div>
+                        <div class="combo-modal-item-meta"><span class="status-pill status-routine" style="font-size:10px;"><span class="dot"></span>Não grave</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: 10 min</span></div>
+                    </div>
+                    <div class="combo-modal-item" data-value="4" data-urgencia="Incidente" data-sla="5" onclick="selectComboModal('tipo', this)">
+                        <div class="combo-modal-item-name">Incidente com medicamentos</div>
+                        <div class="combo-modal-item-meta"><span class="status-pill status-urgent" style="font-size:10px;"><span class="dot"></span>Incidente</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: 5 min</span></div>
+                    </div>
+                    <div class="combo-modal-item" data-value="5" data-urgencia="Emergência" data-sla="3" onclick="selectComboModal('tipo', this)">
+                        <div class="combo-modal-item-name">Incidente de manejamento</div>
+                        <div class="combo-modal-item-meta"><span class="status-pill status-emergency" style="font-size:10px;"><span class="dot"></span>Emergência</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: 3 min</span></div>
+                    </div>
+                </div>
+                <div class="combo-empty" id="combo-tipo-modal-empty" style="display:none;">Nenhum resultado encontrado</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop combo-modal" id="combo-proc-modal">
+        <div class="modal" style="max-width:480px; max-height:80vh; display:flex; flex-direction:column;">
+            <div class="modal-header">
+                <h3>Procedimento</h3>
+                <button class="modal-close" onclick="closeComboModal('proc')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div style="padding:12px 20px 0;">
+                <div class="combo-search-input-wrap">
+                    <span class="material-symbols-outlined">search</span>
+                    <input type="text" class="combo-search-input" id="combo-proc-modal-search" placeholder="Pesquisar procedimento..." oninput="filterComboModal('proc')">
+                </div>
+            </div>
+            <div class="modal-body" style="flex:1; overflow-y:auto; padding-top:8px;">
+                <div class="combo-modal-list" id="combo-proc-modal-list">
+                    <div class="combo-modal-item" data-value="1" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Verificar sinais vitais</div></div>
+                    <div class="combo-modal-item" data-value="2" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Troca de soro</div></div>
+                    <div class="combo-modal-item" data-value="3" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Administrar medicação</div></div>
+                    <div class="combo-modal-item" data-value="4" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Curativo</div></div>
+                    <div class="combo-modal-item" data-value="5" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Coleta de exames</div></div>
+                    <div class="combo-modal-item" data-value="6" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Aferição de pressão arterial</div></div>
+                    <div class="combo-modal-item" data-value="7" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Aferição de temperatura</div></div>
+                    <div class="combo-modal-item" data-value="8" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Aspiração de vias aéreas</div></div>
+                    <div class="combo-modal-item" data-value="9" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Cateterismo vesical</div></div>
+                    <div class="combo-modal-item" data-value="10" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Drenagem de ferida</div></div>
+                    <div class="combo-modal-item" data-value="11" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Oxigenoterapia</div></div>
+                    <div class="combo-modal-item" data-value="12" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Reposicionamento do paciente</div></div>
+                </div>
+                <div class="combo-empty" id="combo-proc-modal-empty" style="display:none;">Nenhum resultado encontrado</div>
+            </div>
         </div>
     </div>
 

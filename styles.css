@@ -818,6 +818,8 @@ body {
 @media (max-width: 768px) {
     .combo-dropdown { display: none !important; }
 }
+/* Combo modals above triage overlay */
+.modal-backdrop.combo-modal { z-index: 200; }
 
 /* ---------- Tags ---------- */
 .triagista-tag {
