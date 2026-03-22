@@ -1,0 +1,11 @@
+# Screenshots
+*.png
+
+# Office docs
+*.docx
+
+# Draw.io
+*.drawio
+
+# Claude Code internal
+.claude/

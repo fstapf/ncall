@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n.Call - Prototype</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="logo"><span>n</span></div>
+            <div class="brand-text">
+                <div class="brand-name">n<em>.Call</em></div>
+                <div class="brand-sub">Hospital Modelo</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">Atendimento</div>
+            <a class="nav-item active has-badge" onclick="showPage('triagem', this)">
+                <span class="material-symbols-outlined">e911_avatar</span>
+                <span class="nav-label">Triagem</span>
+                <span class="nav-badge" id="nav-badge-triagem">3</span>
+                <span class="nav-tooltip">Triagem</span>
+            </a>
+            <a class="nav-item has-badge" onclick="showPage('assistencia', this)">
+                <span class="material-symbols-outlined">home_health</span>
+                <span class="nav-label">Assistência</span>
+                <span class="nav-badge" id="nav-badge-assistencia">5</span>
+                <span class="nav-tooltip">Assistência</span>
+            </a>
+            <a class="nav-item" onclick="showPage('registro', this)">
+                <span class="material-symbols-outlined">history</span>
+                <span class="nav-label">Registro</span>
+                <span class="nav-tooltip">Registro</span>
+            </a>
+            <div class="nav-section">Pessoas</div>
+            <a class="nav-item" onclick="showPage('pacientes', this)">
+                <span class="material-symbols-outlined">patient_list</span>
+                <span class="nav-label">Pacientes</span>
+                <span class="nav-tooltip">Pacientes</span>
+            </a>
+            <a class="nav-item" onclick="showPage('enfermeiros', this)">
+                <span class="material-symbols-outlined">stethoscope</span>
+                <span class="nav-label">Enfermeiros</span>
+                <span class="nav-tooltip">Enfermeiros</span>
+            </a>
+            <a class="nav-item" onclick="showPage('escalas', this)">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span class="nav-label">Escalas</span>
+                <span class="nav-tooltip">Escalas</span>
+            </a>
+            <div class="nav-section">Configuração</div>
+            <a class="nav-item" onclick="showPage('procedimentos', this)">
+                <span class="material-symbols-outlined">medical_information</span>
+                <span class="nav-label">Tipos de Atendimento</span>
+                <span class="nav-tooltip">Tipos de Atendimento</span>
+            </a>
+            <a class="nav-item" onclick="showPage('unidades', this)">
+                <span class="material-symbols-outlined">domain</span>
+                <span class="nav-label">Unidades</span>
+                <span class="nav-tooltip">Unidades</span>
+            </a>
+            <a class="nav-item" onclick="showPage('quartos', this)">
+                <span class="material-symbols-outlined">bed</span>
+                <span class="nav-label">Quartos / Leitos</span>
+                <span class="nav-tooltip">Quartos / Leitos</span>
+            </a>
+            <a class="nav-item" onclick="showPage('parametros', this)">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="nav-label">Parâmetros</span>
+                <span class="nav-tooltip">Parâmetros</span>
+            </a>
+            <div class="nav-section" style="opacity:0.5;font-size:10px;">Dev / Temp</div>
+            <a class="nav-item" href="design-tokens-preview.html" style="opacity:0.7;">
+                <span class="material-symbols-outlined">design_services</span>
+                <span class="nav-label">Componentes</span>
+                <span class="nav-tooltip">Componentes</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-avatar">FS</div>
+            <div class="user-info">
+                <div class="user-name">Enfermeira</div>
+                <div class="user-role">Fernando S.</div>
+            </div>
+            <button class="theme-btn" onclick="toggleTheme(event)" title="Alternar tema">
+                <span class="material-symbols-outlined" id="theme-icon" style="font-size:20px;">dark_mode</span>
+            </button>
+            <button class="theme-btn" onclick="logout()" title="Sair" style="margin-left:0;">
+                <span class="material-symbols-outlined" style="font-size:20px;">logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- BACKDROP -->
+    <div class="backdrop" id="backdrop" onclick="closeSidebar()"></div>
+
+    <!-- HEADER MOBILE -->
+    <header class="header" id="header">
+        <button class="header-hamburger" onclick="toggleSidebar()">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+        <div class="header-title" id="header-title">Triagem</div>
+        <div class="header-avatar">FS</div>
+    </header>
+
+    <!-- ==================== MAIN ==================== -->
+    <main class="main">
+        <div class="main-inner">
+
+            <!-- KIOSK HEADER (visible only in kiosk mode) -->
+            <div class="kiosk-header">
+                <div class="kiosk-brand">
+                    <div class="logo"><span>n</span></div>
+                    <div>
+                        <h2>n<em>.Call</em></h2>
+                        <div class="unit-name">ALA A · 2º Andar · Hospital Modelo</div>
+                    </div>
+                </div>
+                <div class="kiosk-right">
+                    <span class="kiosk-clock" id="kiosk-clock">14:32</span>
+                    <button class="kiosk-theme-btn" onclick="toggleTheme(event)">
+                        <span class="material-symbols-outlined" id="kiosk-theme-icon" style="font-size:20px;">dark_mode</span>
+                    </button>
+                    <button class="kiosk-exit" onclick="toggleKiosk()">
+                        <span class="material-symbols-outlined">fullscreen_exit</span> Sair do Kiosk
+                    </button>
+                </div>
+            </div>
+
+            <!-- ==================== PAGE: TRIAGEM ==================== -->
+            <div class="page active" id="page-triagem">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Triagem</h1>
+                        <p class="page-subtitle">Chamadas aguardando atendimento</p>
+                    </div>
+                </div>
+
+                <div class="card-list">
+                    <div class="assist-card" onclick="openTriageCall('Maria Santos', 'Q.205 · L.3 · ALA A')">
+                        <div class="card-body">
+                            <h4>Maria Santos</h4>
+                            <div class="card-details">
+                                <span><span class="material-symbols-outlined">bed</span> Q.205 · L.3 · ALA A</span>
+                            </div>
+                        </div>
+                        <div class="card-right">
+                            <span class="status-pill status-active"><span class="dot"></span>Chamando...</span>
+                            <span class="card-time">há 2 min</span>
+                        </div>
+                    </div>
+
+                    <div class="assist-card" onclick="openTriageCall('João Pereira', 'Q.103 · L.2 · ALA A')">
+                        <div class="card-body">
+                            <h4>João Pereira</h4>
+                            <div class="card-details">
+                                <span><span class="material-symbols-outlined">bed</span> Q.103 · L.2 · ALA A</span>
+                            </div>
+                        </div>
+                        <div class="card-right">
+                            <span class="status-pill status-active"><span class="dot"></span>Chamando...</span>
+                            <span class="card-time">há 5 min</span>
+                        </div>
+                    </div>
+
+                    <div class="assist-card" onclick="openTriageCall('Ana Oliveira', 'Q.310 · L.2 · ALA B')">
+                        <div class="card-body">
+                            <h4>Ana Oliveira</h4>
+                            <div class="card-details">
+                                <span><span class="material-symbols-outlined">bed</span> Q.310 · L.2 · ALA B</span>
+                            </div>
+                        </div>
+                        <div class="card-right">
+                            <span class="status-pill status-active"><span class="dot"></span>Chamando...</span>
+                            <span class="card-time">há 8 min</span>
+                        </div>
+                    </div>
+
+                    <div class="assist-card" onclick="openTriageCall('Carlos Mendes', 'Q.208 · L.1 · ALA A')">
+                        <div class="card-body">
+                            <h4>Carlos Mendes</h4>
+                            <div class="card-details">
+                                <span><span class="material-symbols-outlined">bed</span> Q.208 · L.1 · ALA A</span>
+                            </div>
+                        </div>
+                        <div class="card-right">
+                            <span class="status-pill status-active"><span class="dot"></span>Chamando...</span>
+                            <span class="card-time">há 12 min</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== PAGE: ASSISTÊNCIA ==================== -->
+            <div class="page" id="page-assistencia">
+
+                <!-- NORMAL CONTENT -->
+                <div class="normal-content">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Assistência</h1>
+                            <p class="page-subtitle">Acompanhe chamadas aguardando e em atendimento</p>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:16px;">
+                            <div class="kiosk-toggle">
+                                <span class="material-symbols-outlined" style="font-size:18px;">tv</span>
+                                Modo Kiosk
+                                <button class="kiosk-switch" id="kiosk-switch" onclick="toggleKiosk()"></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="toolbar">
+                        <div class="toolbar-group">
+                            <button class="icon-btn" data-tooltip="Filtros"><span class="material-symbols-outlined">filter_list</span></button>
+                            <button class="icon-btn" data-tooltip="Limpar filtros"><span class="material-symbols-outlined">filter_list_off</span></button>
+                            <div class="toolbar-divider"></div>
+                            <button class="icon-btn" data-tooltip="Atualizar"><span class="material-symbols-outlined">refresh</span></button>
+                        </div>
+                        <div class="toolbar-group">
+                            <button class="icon-btn" data-tooltip="Exportar"><span class="material-symbols-outlined">download</span></button>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab('aguardando', this)">
+                            <span class="material-symbols-outlined">schedule</span>
+                            Aguardando
+                            <span class="tab-badge" id="badge-aguardando">3</span>
+                        </button>
+                        <button class="tab" onclick="switchTab('atendimento', this)">
+                            <span class="material-symbols-outlined">clinical_notes</span>
+                            Em Atendimento
+                            <span class="tab-badge" id="badge-atendimento">2</span>
+                        </button>
+                    </div>
+
+                    <!-- Tab: Aguardando -->
+                    <div class="tab-content active" id="tab-aguardando">
+                        <div class="card-list" id="list-aguardando">
+                            <!-- Card 1: Maria Santos — Emergency -->
+                            <div class="assist-card" id="card-aguard-maria" onclick="handleCardClick('Maria Santos', 'Q.205 · L.3 · ALA A', 'start')">
+                                <div class="priority-bar" style="background: var(--emergency);"></div>
+                                <div class="card-body">
+                                    <h4>Maria Santos</h4>
+                                    <div class="card-details">
+                                        <span><span class="material-symbols-outlined">bed</span> Q.205 · L.3 · ALA A</span>
+                                        <span><span class="material-symbols-outlined">medical_information</span> Dor intensa no peito</span>
+                                        <span class="triagista-tag">Triagem: Fernando S.</span>
+                                    </div>
+                                    <div class="sla-timer sla-warning">
+                                        <span class="material-symbols-outlined">timer</span>
+                                        <span class="sla-label">SLA</span>
+                                        <div class="sla-bar-track"><div class="sla-bar-fill" style="width:50%"></div></div>
+                                        <span class="sla-time">05:00 restante</span>
+                                    </div>
+                                </div>
+                                <div class="card-right">
+                                    <span class="status-pill status-emergency"><span class="dot"></span>Emergência</span>
+                                    <span class="card-time">há 5 min</span>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: João Pereira — Urgent -->
+                            <div class="assist-card" id="card-aguard-joao" onclick="handleCardClick('João Pereira', 'Q.103 · L.2 · ALA A', 'start')">
+                                <div class="priority-bar" style="background: var(--urgent);"></div>
+                                <div class="card-body">
+                                    <h4>João Pereira</h4>
+                                    <div class="card-details">
+                                        <span><span class="material-symbols-outlined">bed</span> Q.103 · L.2 · ALA A</span>
+                                        <span><span class="material-symbols-outlined">medical_information</span> Verificar sinais vitais</span>
+                                        <span class="triagista-tag">Triagem: Ana L.</span>
+                                    </div>
+                                    <div class="sla-timer sla-ok">
+                                        <span class="material-symbols-outlined">timer</span>
+                                        <span class="sla-label">SLA</span>
+                                        <div class="sla-bar-track"><div class="sla-bar-fill" style="width:40%"></div></div>
+                                        <span class="sla-time">12:00 restante</span>
+                                    </div>
+                                </div>
+                                <div class="card-right">
+                                    <span class="status-pill status-urgent"><span class="dot"></span>Urgência</span>
+                                    <span class="card-time">há 8 min</span>
+                                </div>
+                            </div>
+
+                            <!-- Card 3: Ana Oliveira — Moderate / SLA exceeded -->
+                            <div class="assist-card" id="card-aguard-ana" onclick="handleCardClick('Ana Oliveira', 'Q.310 · L.2 · ALA B', 'start')">
+                                <div class="priority-bar" style="background: var(--moderate);"></div>
+                                <div class="card-body">
+                                    <h4>Ana Oliveira</h4>
+                                    <div class="card-details">
+                                        <span><span class="material-symbols-outlined">bed</span> Q.310 · L.2 · ALA B</span>
+                                        <span><span class="material-symbols-outlined">medical_information</span> Solicita medicação</span>
+                                        <span class="triagista-tag">Triagem: Fernando S.</span>
+                                    </div>
+                                    <div class="sla-timer sla-exceeded">
+                                        <span class="material-symbols-outlined">warning</span>
+                                        <span class="sla-label">SLA</span>
+                                        <div class="sla-bar-track"><div class="sla-bar-fill" style="width:100%"></div></div>
+                                        <span class="sla-time">-05:00 excedido</span>
+                                    </div>
+                                </div>
+                                <div class="card-right">
+                                    <span class="status-pill status-moderate"><span class="dot"></span>Tolerável</span>
+                                    <span class="card-time">há 35 min</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Em Atendimento -->
+                    <div class="tab-content" id="tab-atendimento">
+                        <div class="card-list" id="list-atendimento">
+                            <!-- Card: Eduardo Silva -->
+                            <div class="assist-card" id="card-atend-eduardo" onclick="handleCardClick('Eduardo Silva', 'Q.101 · L.1 · ALA A', 'finish')">
+                                <div class="priority-bar" style="background: var(--calling);"></div>
+                                <div class="card-body">
+                                    <h4>Eduardo Silva</h4>
+                                    <div class="card-details">
+                                        <span><span class="material-symbols-outlined">bed</span> Q.101 · L.1 · ALA A</span>
+                                        <span><span class="material-symbols-outlined">medical_information</span> Troca de soro</span>
+                                        <span class="attendant-tag">Ana L.</span>
+                                    </div>
+                                </div>
+                                <div class="card-right">
+                                    <span class="status-pill status-active"><span class="dot"></span>Em atendimento</span>
+                                    <span class="card-time">08:32</span>
+                                </div>
+                            </div>
+
+                            <!-- Card: Carlos Mendes -->
+                            <div class="assist-card" id="card-atend-carlos" onclick="handleCardClick('Carlos Mendes', 'Q.208 · L.1 · ALA A', 'finish')">
+                                <div class="priority-bar" style="background: var(--calling);"></div>
+                                <div class="card-body">
+                                    <h4>Carlos Mendes</h4>
+                                    <div class="card-details">
+                                        <span><span class="material-symbols-outlined">bed</span> Q.208 · L.1 · ALA A</span>
+                                        <span><span class="material-symbols-outlined">medical_information</span> Verificar sinais vitais</span>
+                                        <span class="attendant-tag">Fernando S.</span>
+                                    </div>
+                                </div>
+                                <div class="card-right">
+                                    <span class="status-pill status-active"><span class="dot"></span>Em atendimento</span>
+                                    <span class="card-time">22:15</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KIOSK CONTENT -->
+                <div class="kiosk-content">
+                    <div class="kiosk-main">
+                        <div class="kiosk-section-title">
+                            <span class="material-symbols-outlined">schedule</span>
+                            Aguardando Assistência
+                            <span class="count-badge" id="kiosk-badge-aguardando">3</span>
+                        </div>
+                        <div class="kiosk-card-list" id="kiosk-list-aguardando">
+                            <div class="kiosk-card" onclick="handleCardClick('Maria Santos', 'Q.205 · L.3 · ALA A', 'start')">
+                                <div class="priority-bar" style="background: var(--emergency);"></div>
+                                <div class="card-body">
+                                    <h4>Maria Santos</h4>
+                                    <div class="card-details">
+                                        <span><span class="material-symbols-outlined">bed</span> Q.205 · L.3 · ALA A</span>
+                                        <span><span class="material-symbols-outlined">medical_information</span> Dor intensa no peito</span>
+                                    </div>
+                                    <div class="sla-timer sla-warning">
+                                        <span class="material-symbols-outlined">timer</span>
+                                        <span class="sla-label">SLA</span>
+                                        <div class="sla-bar-track"><div class="sla-bar-fill" style="width:50%"></div></div>
+                                        <span class="sla-time">05:00 restante</span>
+                                    </div>
+                                </div>
+                                <div class="card-right">
+                                    <span class="status-pill status-emergency"><span class="dot"></span>Emergência</span>
+                                </div>
+                            </div>
+
+                            <div class="kiosk-card" onclick="handleCardClick('João Pereira', 'Q.103 · L.2 · ALA A', 'start')">
+                                <div class="priority-bar" style="background: var(--urgent);"></div>
+                                <div class="card-body">
+                                    <h4>João Pereira</h4>
+                                    <div class="card-details">
+                                        <span><span class="material-symbols-outlined">bed</span> Q.103 · L.2 · ALA A</span>
+                                        <span><span class="material-symbols-outlined">medical_information</span> Verificar sinais vitais</span>
+                                    </div>
+                                    <div class="sla-timer sla-ok">
+                                        <span class="material-symbols-outlined">timer</span>
+                                        <span class="sla-label">SLA</span>
+                                        <div class="sla-bar-track"><div class="sla-bar-fill" style="width:40%"></div></div>
+                                        <span class="sla-time">12:00 restante</span>
+                                    </div>
+                                </div>
+                                <div class="card-right">
+                                    <span class="status-pill status-urgent"><span class="dot"></span>Urgência</span>
+                                </div>
+                            </div>
+
+                            <div class="kiosk-card" onclick="handleCardClick('Ana Oliveira', 'Q.310 · L.2 · ALA B', 'start')">
+                                <div class="priority-bar" style="background: var(--moderate);"></div>
+                                <div class="card-body">
+                                    <h4>Ana Oliveira</h4>
+                                    <div class="card-details">
+                                        <span><span class="material-symbols-outlined">bed</span> Q.310 · L.2 · ALA B</span>
+                                        <span><span class="material-symbols-outlined">medical_information</span> Solicita medicação</span>
+                                    </div>
+                                    <div class="sla-timer sla-exceeded">
+                                        <span class="material-symbols-outlined">warning</span>
+                                        <span class="sla-label">SLA</span>
+                                        <div class="sla-bar-track"><div class="sla-bar-fill" style="width:100%"></div></div>
+                                        <span class="sla-time">-05:00 excedido</span>
+                                    </div>
+                                </div>
+                                <div class="card-right">
+                                    <span class="status-pill status-moderate"><span class="dot"></span>Tolerável</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kiosk-sidebar">
+                        <div class="kiosk-sidebar-header">
+                            <span class="material-symbols-outlined">clinical_notes</span>
+                            Em Atendimento
+                            <span class="count-badge" id="kiosk-badge-atendimento">2</span>
+                        </div>
+                        <div class="kiosk-sidebar-list" id="kiosk-list-atendimento">
+                            <div class="kiosk-mini-card" onclick="handleCardClick('Eduardo Silva', 'Q.101 · L.1 · ALA A', 'finish')">
+                                <h5>Eduardo Silva</h5>
+                                <div class="mini-details">
+                                    <span><span class="material-symbols-outlined">bed</span> Q.101 · L.1</span>
+                                    <span><span class="material-symbols-outlined">medical_information</span> Troca de soro</span>
+                                </div>
+                                <div class="mini-footer">
+                                    <span class="attendant-tag">Ana L.</span>
+                                    <span class="mini-time">08:32</span>
+                                </div>
+                            </div>
+
+                            <div class="kiosk-mini-card" onclick="handleCardClick('Carlos Mendes', 'Q.208 · L.1 · ALA A', 'finish')">
+                                <h5>Carlos Mendes</h5>
+                                <div class="mini-details">
+                                    <span><span class="material-symbols-outlined">bed</span> Q.208 · L.1</span>
+                                    <span><span class="material-symbols-outlined">medical_information</span> Verificar sinais vitais</span>
+                                </div>
+                                <div class="mini-footer">
+                                    <span class="attendant-tag">Fernando S.</span>
+                                    <span class="mini-time">22:15</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== PAGE: REGISTRO ==================== -->
+            <div class="page" id="page-registro">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Registro de Atendimentos</h1>
+                        <p class="page-subtitle">Histórico completo de atendimentos realizados</p>
+                    </div>
+                </div>
+
+                <div class="toolbar">
+                    <div class="toolbar-group">
+                        <button class="icon-btn" data-tooltip="Filtros"><span class="material-symbols-outlined">filter_list</span></button>
+                        <button class="icon-btn" data-tooltip="Limpar filtros"><span class="material-symbols-outlined">filter_list_off</span></button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button class="icon-btn" data-tooltip="Exportar"><span class="material-symbols-outlined">download</span></button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Paciente</th>
+                                    <th>Quarto</th>
+                                    <th>Procedimento</th>
+                                    <th class="hide-mobile">Triagista</th>
+                                    <th>Atendente</th>
+                                    <th class="hide-mobile">Tempo SLA</th>
+                                    <th class="hide-mobile">Tempo Atend.</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>22/03/2026 08:15</td>
+                                    <td>Roberto Lima</td>
+                                    <td>Q.102</td>
+                                    <td>Verificar sinais vitais</td>
+                                    <td class="hide-mobile">Fernando S.</td>
+                                    <td>Ana L.</td>
+                                    <td class="hide-mobile">20 min</td>
+                                    <td class="hide-mobile">12 min</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Concluído</span></td>
+                                </tr>
+                                <tr>
+                                    <td>22/03/2026 07:42</td>
+                                    <td>Lucia Ferreira</td>
+                                    <td>Q.205</td>
+                                    <td>Administrar medicação</td>
+                                    <td class="hide-mobile">Ana L.</td>
+                                    <td>Fernando S.</td>
+                                    <td class="hide-mobile">45 min</td>
+                                    <td class="hide-mobile">18 min</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Concluído</span></td>
+                                </tr>
+                                <tr>
+                                    <td>22/03/2026 07:10</td>
+                                    <td>Pedro Souza</td>
+                                    <td>Q.310</td>
+                                    <td>Troca de soro</td>
+                                    <td class="hide-mobile">Fernando S.</td>
+                                    <td>Ana L.</td>
+                                    <td class="hide-mobile">20 min</td>
+                                    <td class="hide-mobile">08 min</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Concluído</span></td>
+                                </tr>
+                                <tr>
+                                    <td>21/03/2026 22:30</td>
+                                    <td>Fernanda Costa</td>
+                                    <td>Q.103</td>
+                                    <td>Atendimento emergencial</td>
+                                    <td class="hide-mobile">Ana L.</td>
+                                    <td>Fernando S.</td>
+                                    <td class="hide-mobile">10 min</td>
+                                    <td class="hide-mobile">06 min</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Concluído</span></td>
+                                </tr>
+                                <tr>
+                                    <td>21/03/2026 21:45</td>
+                                    <td>Marcos Silva</td>
+                                    <td>Q.208</td>
+                                    <td>Curativo</td>
+                                    <td class="hide-mobile">Fernando S.</td>
+                                    <td>Ana L.</td>
+                                    <td class="hide-mobile">60 min</td>
+                                    <td class="hide-mobile">25 min</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Concluído</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <span>1 a 5 de 5 registros</span>
+                        <div class="pagination-btns">
+                            <button class="page-btn active">1</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== PAGE: PACIENTES ==================== -->
+            <div class="page" id="page-pacientes">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Pacientes</h1>
+                        <p class="page-subtitle">Gestão de pacientes internados</p>
+                    </div>
+                </div>
+
+                <div class="toolbar">
+                    <div class="toolbar-group">
+                        <button class="btn btn-primary"><span class="material-symbols-outlined">add</span> Cadastrar</button>
+                        <div class="toolbar-divider"></div>
+                        <button class="icon-btn" data-tooltip="Filtros"><span class="material-symbols-outlined">filter_list</span></button>
+                        <button class="icon-btn" data-tooltip="Limpar filtros"><span class="material-symbols-outlined">filter_list_off</span></button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button class="icon-btn" data-tooltip="Exportar"><span class="material-symbols-outlined">download</span></button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Quarto</th>
+                                    <th>Leito</th>
+                                    <th class="hide-mobile">Unidade</th>
+                                    <th>Status</th>
+                                    <th style="text-align:right;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Maria Santos</td>
+                                    <td>Q.205</td>
+                                    <td>L.3</td>
+                                    <td class="hide-mobile">ALA A</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Ativo</span></td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>João Pereira</td>
+                                    <td>Q.103</td>
+                                    <td>L.2</td>
+                                    <td class="hide-mobile">ALA A</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Ativo</span></td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Ana Oliveira</td>
+                                    <td>Q.310</td>
+                                    <td>L.2</td>
+                                    <td class="hide-mobile">ALA B</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Ativo</span></td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>Eduardo Silva</td>
+                                    <td>Q.101</td>
+                                    <td>L.1</td>
+                                    <td class="hide-mobile">ALA A</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Ativo</span></td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>Carlos Mendes</td>
+                                    <td>Q.208</td>
+                                    <td>L.1</td>
+                                    <td class="hide-mobile">ALA A</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Ativo</span></td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <span>1 a 5 de 5 registros</span>
+                        <div class="pagination-btns">
+                            <button class="page-btn active">1</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== PAGE: ENFERMEIROS ==================== -->
+            <div class="page" id="page-enfermeiros">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Enfermeiros</h1>
+                        <p class="page-subtitle">Gestão da equipe de enfermagem</p>
+                    </div>
+                </div>
+
+                <div class="toolbar">
+                    <div class="toolbar-group">
+                        <button class="btn btn-primary"><span class="material-symbols-outlined">add</span> Cadastrar</button>
+                        <div class="toolbar-divider"></div>
+                        <button class="icon-btn" data-tooltip="Filtros"><span class="material-symbols-outlined">filter_list</span></button>
+                        <button class="icon-btn" data-tooltip="Limpar filtros"><span class="material-symbols-outlined">filter_list_off</span></button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button class="icon-btn" data-tooltip="Exportar"><span class="material-symbols-outlined">download</span></button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>COREN</th>
+                                    <th class="hide-mobile">Cargo</th>
+                                    <th>Turno</th>
+                                    <th>Status</th>
+                                    <th style="text-align:right;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Ana Luiza Costa</td>
+                                    <td>COREN-SP 123456</td>
+                                    <td class="hide-mobile">Enfermeira</td>
+                                    <td>Diurno</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Ativo</span></td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Fernando Stapf</td>
+                                    <td>COREN-SP 789012</td>
+                                    <td class="hide-mobile">Enfermeiro</td>
+                                    <td>Diurno</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Ativo</span></td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Mariana Ribeiro</td>
+                                    <td>COREN-SP 345678</td>
+                                    <td class="hide-mobile">Técnica de Enfermagem</td>
+                                    <td>Noturno</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Ativo</span></td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>Rafael Oliveira</td>
+                                    <td>COREN-SP 901234</td>
+                                    <td class="hide-mobile">Enfermeiro</td>
+                                    <td>Noturno</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Ativo</span></td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>Camila Torres</td>
+                                    <td>COREN-SP 567890</td>
+                                    <td class="hide-mobile">Técnica de Enfermagem</td>
+                                    <td>Diurno</td>
+                                    <td><span class="status-pill status-urgent"><span class="dot"></span>Inativo</span></td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <span>1 a 5 de 5 registros</span>
+                        <div class="pagination-btns">
+                            <button class="page-btn active">1</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== PAGE: ESCALAS ==================== -->
+            <div class="page" id="page-escalas">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Escalas</h1>
+                        <p class="page-subtitle">Gestão de escalas de plantão</p>
+                    </div>
+                </div>
+                <div class="empty-state">
+                    <span class="material-symbols-outlined">calendar_month</span>
+                    <h3>Em desenvolvimento</h3>
+                    <p>Funcionalidade disponível na versão final</p>
+                </div>
+            </div>
+
+            <!-- ==================== PAGE: PROCEDIMENTOS ==================== -->
+            <div class="page" id="page-procedimentos">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Tipos de Atendimento</h1>
+                        <p class="page-subtitle">Cadastro de tipos de atendimento com grau de urgência e SLA</p>
+                    </div>
+                </div>
+
+                <div class="toolbar">
+                    <div class="toolbar-group">
+                        <button class="btn btn-primary" onclick="openCrudModal()">
+                            <span class="material-symbols-outlined">add</span> Cadastrar
+                        </button>
+                        <div class="toolbar-divider"></div>
+                        <button class="icon-btn" data-tooltip="Filtros"><span class="material-symbols-outlined">filter_list</span></button>
+                        <button class="icon-btn" data-tooltip="Limpar filtros"><span class="material-symbols-outlined">filter_list_off</span></button>
+                        <button class="icon-btn" data-tooltip="Atualizar"><span class="material-symbols-outlined">refresh</span></button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button class="icon-btn" data-tooltip="Exportar"><span class="material-symbols-outlined">download</span></button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tipo Atendimento</th>
+                                    <th>Grau Urgência</th>
+                                    <th class="hide-mobile">SLA (minutos)</th>
+                                    <th style="text-align:right;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Assistência de enfermagem</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Não grave</span></td>
+                                    <td class="hide-mobile">10</td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Código de Emergência</td>
+                                    <td><span class="status-pill status-urgent"><span class="dot"></span>Urgência</span></td>
+                                    <td class="hide-mobile">0</td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Conforto e bem estar</td>
+                                    <td><span class="status-pill status-routine"><span class="dot"></span>Não grave</span></td>
+                                    <td class="hide-mobile">10</td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Incidente com medicamentos</td>
+                                    <td><span class="status-pill status-urgent"><span class="dot"></span>Incidente</span></td>
+                                    <td class="hide-mobile">5</td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Incidente de manejamento</td>
+                                    <td><span class="status-pill status-emergency"><span class="dot"></span>Emergência</span></td>
+                                    <td class="hide-mobile">3</td>
+                                    <td><div class="table-actions"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button></div></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <span>1 a 5 de 5 registros</span>
+                        <div class="pagination-btns">
+                            <button class="page-btn active">1</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== PAGE: UNIDADES ==================== -->
+            <div class="page" id="page-unidades">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Unidades</h1>
+                        <p class="page-subtitle">Gestão de unidades hospitalares</p>
+                    </div>
+                </div>
+                <div class="empty-state">
+                    <span class="material-symbols-outlined">domain</span>
+                    <h3>Em desenvolvimento</h3>
+                    <p>Funcionalidade disponível na versão final</p>
+                </div>
+            </div>
+
+            <!-- ==================== PAGE: QUARTOS ==================== -->
+            <div class="page" id="page-quartos">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Quartos / Leitos</h1>
+                        <p class="page-subtitle">Gestão de quartos e leitos</p>
+                    </div>
+                </div>
+                <div class="empty-state">
+                    <span class="material-symbols-outlined">bed</span>
+                    <h3>Em desenvolvimento</h3>
+                    <p>Funcionalidade disponível na versão final</p>
+                </div>
+            </div>
+
+            <!-- ==================== PAGE: PARÂMETROS ==================== -->
+            <div class="page" id="page-parametros">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Parâmetros</h1>
+                        <p class="page-subtitle">Configurações do sistema</p>
+                    </div>
+                </div>
+                <div class="empty-state">
+                    <span class="material-symbols-outlined">settings</span>
+                    <h3>Em desenvolvimento</h3>
+                    <p>Funcionalidade disponível na versão final</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ==================== TRIAGE CALL OVERLAY ==================== -->
+    <div class="triage-overlay" id="triage-overlay">
+        <div class="call-screen">
+            <!-- VIDEO PANEL -->
+            <div class="video-panel" id="videoPanel">
+                <div class="video-topbar">
+                    <button class="video-back" onclick="closeTriageCall()">
+                        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+                        <span>Voltar à triagem</span>
+                    </button>
+                    <div class="video-timer">
+                        <span class="rec-dot"></span>
+                        <span id="rec-timer">00:00</span>
+                    </div>
+                </div>
+
+                <div class="video-content">
+                    <div class="video-avatar" id="triage-patient-avatar">MS</div>
+                </div>
+
+                <div class="patient-strip">
+                    <div>
+                        <h4 id="triage-patient-name">Maria Santos</h4>
+                        <p id="triage-patient-room">Quarto 205 · Leito 3 · ALA A</p>
+                    </div>
+                </div>
+
+                <div class="video-self">
+                    <div class="self-avatar">FS</div>
+                </div>
+
+                <div class="video-controls">
+                    <button class="video-ctrl-btn" onclick="this.classList.toggle('muted')" title="Microfone">
+                        <span class="material-symbols-outlined">mic</span>
+                    </button>
+                    <button class="video-ctrl-btn" onclick="this.classList.toggle('muted')" title="Câmera">
+                        <span class="material-symbols-outlined">videocam</span>
+                    </button>
+                    <button class="video-ctrl-btn end-call" onclick="closeTriageCall()" title="Encerrar chamada">
+                        <span class="material-symbols-outlined">call_end</span>
+                    </button>
+                    <button class="video-ctrl-btn" title="Chat">
+                        <span class="material-symbols-outlined">chat</span>
+                    </button>
+                    <button class="video-ctrl-btn" onclick="toggleTheme(event)" title="Tema">
+                        <span class="material-symbols-outlined">dark_mode</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- FORM PANEL -->
+            <div class="form-panel">
+                <div class="form-header">
+                    <h2>Cadastro da Triagem</h2>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="pip-toggle" onclick="togglePip()" title="Minimizar/expandir vídeo" style="align-items:center; justify-content:center; width:34px; height:34px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface); color:var(--text-secondary); cursor:pointer;">
+                            <span class="material-symbols-outlined" id="pipIcon" style="font-size:18px;">picture_in_picture_alt</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-body">
+                    <div class="patient-card">
+                        <div class="p-avatar" id="triage-form-avatar">MS</div>
+                        <div class="p-info">
+                            <h4 id="triage-form-name">Maria Santos</h4>
+                            <p id="triage-form-room">Quarto 205 · Leito 3 · ALA A</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Atendimento</label>
+                        <div class="combo-search" id="combo-tipo">
+                            <div class="combo-trigger" onclick="openCombo('tipo')">
+                                <span class="combo-value" id="combo-tipo-value">Selecione...</span>
+                                <span class="material-symbols-outlined combo-arrow">expand_more</span>
+                            </div>
+                            <!-- Desktop dropdown -->
+                            <div class="combo-dropdown" id="combo-tipo-dropdown">
+                                <div class="combo-search-input-wrap">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <input type="text" class="combo-search-input" id="combo-tipo-search" placeholder="Pesquisar..." oninput="filterCombo('tipo')">
+                                </div>
+                                <div class="combo-list" id="combo-tipo-list">
+                                    <div class="combo-item" data-value="1" data-urgencia="Não grave" data-sla="10" onclick="selectCombo('tipo', this)">Assistência de enfermagem</div>
+                                    <div class="combo-item" data-value="2" data-urgencia="Urgência" data-sla="0" onclick="selectCombo('tipo', this)">Código de Emergência</div>
+                                    <div class="combo-item" data-value="3" data-urgencia="Não grave" data-sla="10" onclick="selectCombo('tipo', this)">Conforto e bem estar</div>
+                                    <div class="combo-item" data-value="4" data-urgencia="Incidente" data-sla="5" onclick="selectCombo('tipo', this)">Incidente com medicamentos</div>
+                                    <div class="combo-item" data-value="5" data-urgencia="Emergência" data-sla="3" onclick="selectCombo('tipo', this)">Incidente de manejamento</div>
+                                </div>
+                                <div class="combo-empty" style="display:none;">Nenhum resultado</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="triage-tipo" value="">
+                    </div>
+
+                    <!-- Mobile/Tablet: search modal -->
+                    <div class="modal-backdrop combo-modal" id="combo-tipo-modal">
+                        <div class="modal" style="max-width:480px; max-height:80vh; display:flex; flex-direction:column;">
+                            <div class="modal-header">
+                                <h3>Tipo de Atendimento</h3>
+                                <button class="modal-close" onclick="closeComboModal('tipo')">
+                                    <span class="material-symbols-outlined">close</span>
+                                </button>
+                            </div>
+                            <div style="padding:12px 20px 0;">
+                                <div class="combo-search-input-wrap">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <input type="text" class="combo-search-input" id="combo-tipo-modal-search" placeholder="Pesquisar tipo de atendimento..." oninput="filterComboModal('tipo')">
+                                </div>
+                            </div>
+                            <div class="modal-body" style="flex:1; overflow-y:auto; padding-top:8px;">
+                                <div class="combo-modal-list" id="combo-tipo-modal-list">
+                                    <div class="combo-modal-item" data-value="1" data-urgencia="Não grave" data-sla="10" onclick="selectComboModal('tipo', this)">
+                                        <div class="combo-modal-item-name">Assistência de enfermagem</div>
+                                        <div class="combo-modal-item-meta"><span class="status-pill status-routine" style="font-size:10px;"><span class="dot"></span>Não grave</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: 10 min</span></div>
+                                    </div>
+                                    <div class="combo-modal-item" data-value="2" data-urgencia="Urgência" data-sla="0" onclick="selectComboModal('tipo', this)">
+                                        <div class="combo-modal-item-name">Código de Emergência</div>
+                                        <div class="combo-modal-item-meta"><span class="status-pill status-urgent" style="font-size:10px;"><span class="dot"></span>Urgência</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: Imediato</span></div>
+                                    </div>
+                                    <div class="combo-modal-item" data-value="3" data-urgencia="Não grave" data-sla="10" onclick="selectComboModal('tipo', this)">
+                                        <div class="combo-modal-item-name">Conforto e bem estar</div>
+                                        <div class="combo-modal-item-meta"><span class="status-pill status-routine" style="font-size:10px;"><span class="dot"></span>Não grave</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: 10 min</span></div>
+                                    </div>
+                                    <div class="combo-modal-item" data-value="4" data-urgencia="Incidente" data-sla="5" onclick="selectComboModal('tipo', this)">
+                                        <div class="combo-modal-item-name">Incidente com medicamentos</div>
+                                        <div class="combo-modal-item-meta"><span class="status-pill status-urgent" style="font-size:10px;"><span class="dot"></span>Incidente</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: 5 min</span></div>
+                                    </div>
+                                    <div class="combo-modal-item" data-value="5" data-urgencia="Emergência" data-sla="3" onclick="selectComboModal('tipo', this)">
+                                        <div class="combo-modal-item-name">Incidente de manejamento</div>
+                                        <div class="combo-modal-item-meta"><span class="status-pill status-emergency" style="font-size:10px;"><span class="dot"></span>Emergência</span> <span style="color:var(--text-secondary); font-size:11px;">SLA: 3 min</span></div>
+                                    </div>
+                                </div>
+                                <div class="combo-empty" id="combo-tipo-modal-empty" style="display:none;">Nenhum resultado encontrado</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="triage-urgencia-info" style="display:none; margin-bottom:16px;">
+                        <div style="display:flex; gap:12px;">
+                            <div style="flex:1; padding:10px 14px; background:var(--background); border-radius:var(--radius-sm);">
+                                <div style="font-size:10px; font-weight:600; text-transform:uppercase; color:var(--text-secondary); letter-spacing:0.5px; margin-bottom:2px;">Grau de Urgência</div>
+                                <div id="triage-urgencia-label" style="font-size:14px; font-weight:600;"></div>
+                            </div>
+                            <div style="flex:1; padding:10px 14px; background:var(--background); border-radius:var(--radius-sm);">
+                                <div style="font-size:10px; font-weight:600; text-transform:uppercase; color:var(--text-secondary); letter-spacing:0.5px; margin-bottom:2px;">SLA</div>
+                                <div id="triage-sla-label" style="font-size:14px; font-weight:600;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Procedimento</label>
+                        <div class="combo-search" id="combo-proc">
+                            <div class="combo-trigger" onclick="openCombo('proc')">
+                                <span class="combo-value placeholder" id="combo-proc-value">Selecione...</span>
+                                <span class="material-symbols-outlined combo-arrow">expand_more</span>
+                            </div>
+                            <div class="combo-dropdown" id="combo-proc-dropdown">
+                                <div class="combo-search-input-wrap">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <input type="text" class="combo-search-input" id="combo-proc-search" placeholder="Pesquisar procedimento..." oninput="filterCombo('proc')">
+                                </div>
+                                <div class="combo-list" id="combo-proc-list">
+                                    <div class="combo-item" data-value="1" onclick="selectCombo('proc', this)">Verificar sinais vitais</div>
+                                    <div class="combo-item" data-value="2" onclick="selectCombo('proc', this)">Troca de soro</div>
+                                    <div class="combo-item" data-value="3" onclick="selectCombo('proc', this)">Administrar medicação</div>
+                                    <div class="combo-item" data-value="4" onclick="selectCombo('proc', this)">Curativo</div>
+                                    <div class="combo-item" data-value="5" onclick="selectCombo('proc', this)">Coleta de exames</div>
+                                    <div class="combo-item" data-value="6" onclick="selectCombo('proc', this)">Aferição de pressão arterial</div>
+                                    <div class="combo-item" data-value="7" onclick="selectCombo('proc', this)">Aferição de temperatura</div>
+                                    <div class="combo-item" data-value="8" onclick="selectCombo('proc', this)">Aspiração de vias aéreas</div>
+                                    <div class="combo-item" data-value="9" onclick="selectCombo('proc', this)">Cateterismo vesical</div>
+                                    <div class="combo-item" data-value="10" onclick="selectCombo('proc', this)">Drenagem de ferida</div>
+                                    <div class="combo-item" data-value="11" onclick="selectCombo('proc', this)">Oxigenoterapia</div>
+                                    <div class="combo-item" data-value="12" onclick="selectCombo('proc', this)">Reposicionamento do paciente</div>
+                                </div>
+                                <div class="combo-empty" style="display:none;">Nenhum resultado</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="triage-proc" value="">
+                    </div>
+
+                    <!-- Mobile/Tablet: search modal for Procedimento -->
+                    <div class="modal-backdrop combo-modal" id="combo-proc-modal">
+                        <div class="modal" style="max-width:480px; max-height:80vh; display:flex; flex-direction:column;">
+                            <div class="modal-header">
+                                <h3>Procedimento</h3>
+                                <button class="modal-close" onclick="closeComboModal('proc')">
+                                    <span class="material-symbols-outlined">close</span>
+                                </button>
+                            </div>
+                            <div style="padding:12px 20px 0;">
+                                <div class="combo-search-input-wrap">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <input type="text" class="combo-search-input" id="combo-proc-modal-search" placeholder="Pesquisar procedimento..." oninput="filterComboModal('proc')">
+                                </div>
+                            </div>
+                            <div class="modal-body" style="flex:1; overflow-y:auto; padding-top:8px;">
+                                <div class="combo-modal-list" id="combo-proc-modal-list">
+                                    <div class="combo-modal-item" data-value="1" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Verificar sinais vitais</div></div>
+                                    <div class="combo-modal-item" data-value="2" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Troca de soro</div></div>
+                                    <div class="combo-modal-item" data-value="3" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Administrar medicação</div></div>
+                                    <div class="combo-modal-item" data-value="4" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Curativo</div></div>
+                                    <div class="combo-modal-item" data-value="5" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Coleta de exames</div></div>
+                                    <div class="combo-modal-item" data-value="6" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Aferição de pressão arterial</div></div>
+                                    <div class="combo-modal-item" data-value="7" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Aferição de temperatura</div></div>
+                                    <div class="combo-modal-item" data-value="8" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Aspiração de vias aéreas</div></div>
+                                    <div class="combo-modal-item" data-value="9" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Cateterismo vesical</div></div>
+                                    <div class="combo-modal-item" data-value="10" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Drenagem de ferida</div></div>
+                                    <div class="combo-modal-item" data-value="11" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Oxigenoterapia</div></div>
+                                    <div class="combo-modal-item" data-value="12" onclick="selectComboModal('proc', this)"><div class="combo-modal-item-name">Reposicionamento do paciente</div></div>
+                                </div>
+                                <div class="combo-empty" id="combo-proc-modal-empty" style="display:none;">Nenhum resultado encontrado</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Observações</label>
+                        <textarea class="form-input form-textarea" placeholder="Observações sobre a triagem..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button class="btn btn-ghost" onclick="closeTriageCall()">
+                        <span class="material-symbols-outlined">close</span>
+                        Encerrar
+                    </button>
+                    <button class="btn btn-primary" onclick="saveAndForward()">
+                        <span class="material-symbols-outlined">send</span>
+                        Salvar e Encaminhar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PiP floating thumbnail -->
+        <div class="pip-thumbnail" id="pipThumbnail" onclick="togglePip()">
+            <div class="thumb-avatar" id="pip-thumb-avatar">MS</div>
+            <div class="thumb-label">Toque para expandir</div>
+        </div>
+    </div>
+
+    <!-- ==================== PIN MODAL ==================== -->
+    <div class="modal-backdrop" id="pin-modal">
+        <div class="modal" style="max-width:380px;">
+            <div class="modal-header">
+                <h3 style="display:flex; align-items:center; gap:8px;">
+                    <span class="material-symbols-outlined">lock</span>
+                    Identificação
+                </h3>
+                <button class="modal-close" onclick="closePin()">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="pin-context" id="pin-context">
+                    <div class="patient-name" id="pin-patient-name">Maria Santos</div>
+                    <div class="patient-info" id="pin-patient-info">Q.205 · L.3 · ALA A</div>
+                    <div class="pin-action pin-action-start" id="pin-action-badge">
+                        <span class="material-symbols-outlined" style="font-size:14px;">play_arrow</span>
+                        Iniciar assistência
+                    </div>
+                </div>
+
+                <div class="pin-display" id="pin-display">
+                    <div class="pin-digit current" id="pin-d0"></div>
+                    <div class="pin-digit" id="pin-d1"></div>
+                    <div class="pin-digit" id="pin-d2"></div>
+                    <div class="pin-digit" id="pin-d3"></div>
+                </div>
+                <div class="pin-error-msg" id="pin-error-msg">PIN incorreto</div>
+
+                <div class="numpad">
+                    <button class="numpad-btn" onclick="pinInput(1)">1</button>
+                    <button class="numpad-btn" onclick="pinInput(2)">2</button>
+                    <button class="numpad-btn" onclick="pinInput(3)">3</button>
+                    <button class="numpad-btn" onclick="pinInput(4)">4</button>
+                    <button class="numpad-btn" onclick="pinInput(5)">5</button>
+                    <button class="numpad-btn" onclick="pinInput(6)">6</button>
+                    <button class="numpad-btn" onclick="pinInput(7)">7</button>
+                    <button class="numpad-btn" onclick="pinInput(8)">8</button>
+                    <button class="numpad-btn" onclick="pinInput(9)">9</button>
+                    <button class="numpad-btn action" onclick="pinClear()">
+                        <span class="material-symbols-outlined">backspace</span>
+                    </button>
+                    <button class="numpad-btn" onclick="pinInput(0)">0</button>
+                    <button class="numpad-btn action" disabled style="visibility:hidden;"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CRUD MODAL ==================== -->
+    <div class="modal-backdrop" id="crud-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Cadastro de Tipo de Atendimento</h3>
+                <button class="modal-close" onclick="closeCrudModal()">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Tipo Atendimento</label>
+                    <input type="text" class="form-input" placeholder="Descrição do tipo de atendimento">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Grau Urgência</label>
+                    <select class="form-input form-select">
+                        <option value="">Selecione...</option>
+                        <option value="urgencia">Urgência</option>
+                        <option value="emergencia">Emergência</option>
+                        <option value="incidente">Incidente</option>
+                        <option value="nao-grave">Não grave</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">SLA (minutos)</label>
+                    <input type="number" class="form-input" placeholder="Ex: 10" min="0">
+                    <span class="form-hint">Tempo máximo em minutos para o atendimento (0 = imediato)</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeCrudModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="closeCrudModal(); showToast('Tipo de atendimento salvo com sucesso');">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TOAST ==================== -->
+    <div id="toast">
+        <span class="material-symbols-outlined">check_circle</span>
+        <span id="toast-msg">Ação realizada com sucesso</span>
+    </div>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        // ===== 1. AUTH GUARD =====
+        if (!sessionStorage.getItem('ncall_auth')) {
+            window.location.href = 'index.html';
+        }
+
+        // ===== 2. THEME =====
+        (function initTheme() {
+            var theme = localStorage.getItem('ncall_theme');
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                updateThemeIcons('light_mode');
+            }
+        })();
+
+        function toggleTheme(e) {
+            if (e) e.stopPropagation();
+            var html = document.documentElement;
+            var isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? '' : 'dark');
+            localStorage.setItem('ncall_theme', isDark ? 'light' : 'dark');
+            updateThemeIcons(isDark ? 'dark_mode' : 'light_mode');
+        }
+
+        function updateThemeIcons(icon) {
+            var ids = ['theme-icon', 'kiosk-theme-icon'];
+            ids.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.textContent = icon;
+            });
+        }
+
+        // ===== 3. PAGE ROUTING =====
+        var pageTitles = {
+            triagem: 'Triagem',
+            assistencia: 'Assistência',
+            registro: 'Registro',
+            pacientes: 'Pacientes',
+            enfermeiros: 'Enfermeiros',
+            escalas: 'Escalas',
+            procedimentos: 'Procedimentos',
+            unidades: 'Unidades',
+            quartos: 'Quartos / Leitos',
+            parametros: 'Parâmetros'
+        };
+
+        function showPage(id, navEl) {
+            // Exit kiosk if leaving assistencia
+            if (id !== 'assistencia' && document.body.classList.contains('kiosk-mode')) {
+                exitKiosk();
+            }
+
+            // Hide all pages, show target
+            document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+            var target = document.getElementById('page-' + id);
+            if (target) target.classList.add('active');
+
+            // Update sidebar active
+            document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+            if (navEl) navEl.classList.add('active');
+
+            // Update header title
+            document.getElementById('header-title').textContent = pageTitles[id] || id;
+
+            // Close sidebar on mobile
+            closeSidebar();
+        }
+
+        // ===== 4. SIDEBAR =====
+        function toggleSidebar() {
+            var sb = document.getElementById('sidebar');
+            var bd = document.getElementById('backdrop');
+            var isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                sb.classList.toggle('open');
+                bd.classList.toggle('visible', sb.classList.contains('open'));
+            } else {
+                sb.classList.toggle('expanded');
+            }
+        }
+
+        function closeSidebar() {
+            var sb = document.getElementById('sidebar');
+            var bd = document.getElementById('backdrop');
+            sb.classList.remove('open', 'expanded');
+            bd.classList.remove('visible');
+        }
+
+        // ===== 5. LOGOUT =====
+        function logout() {
+            sessionStorage.removeItem('ncall_auth');
+            window.location.href = 'index.html';
+        }
+
+        // ===== 6. TABS =====
+        function switchTab(id, tabEl) {
+            document.querySelectorAll('#page-assistencia .tab').forEach(function(t) { t.classList.remove('active'); });
+            if (tabEl) tabEl.classList.add('active');
+            document.querySelectorAll('#page-assistencia .tab-content').forEach(function(c) { c.classList.remove('active'); });
+            var target = document.getElementById('tab-' + id);
+            if (target) target.classList.add('active');
+        }
+
+        // ===== 7. KIOSK =====
+        function toggleKiosk() {
+            var body = document.body;
+            var sw = document.getElementById('kiosk-switch');
+            if (body.classList.contains('kiosk-mode')) {
+                exitKiosk();
+            } else {
+                body.classList.add('kiosk-mode');
+                if (sw) sw.classList.add('on');
+                // Make sure we're on assistencia page
+                showPage('assistencia', document.querySelector('.nav-item[onclick*="assistencia"]'));
+                updateClock();
+            }
+        }
+
+        function exitKiosk() {
+            document.body.classList.remove('kiosk-mode');
+            var sw = document.getElementById('kiosk-switch');
+            if (sw) sw.classList.remove('on');
+        }
+
+        function updateClock() {
+            var el = document.getElementById('kiosk-clock');
+            if (!el) return;
+            var now = new Date();
+            el.textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        }
+        setInterval(updateClock, 10000);
+        updateClock();
+
+        // ===== 8. TRIAGE CALL =====
+        var recTimerInterval = null;
+        var recSeconds = 0;
+
+        function openTriageCall(name, room) {
+            var overlay = document.getElementById('triage-overlay');
+            overlay.classList.add('open');
+
+            // Get initials
+            var initials = name.split(' ').map(function(w) { return w[0]; }).join('').substring(0, 2);
+
+            // Update patient info
+            document.getElementById('triage-patient-avatar').textContent = initials;
+            document.getElementById('triage-patient-name').textContent = name;
+            document.getElementById('triage-patient-room').textContent = room;
+            document.getElementById('triage-form-avatar').textContent = initials;
+            document.getElementById('triage-form-name').textContent = name;
+            document.getElementById('triage-form-room').textContent = room;
+            document.getElementById('pip-thumb-avatar').textContent = initials;
+
+            // Reset form
+            document.getElementById('triage-tipo').value = '';
+            document.getElementById('triage-proc').value = '';
+            var comboTipoVal = document.getElementById('combo-tipo-value');
+            if (comboTipoVal) { comboTipoVal.textContent = 'Selecione...'; comboTipoVal.classList.add('placeholder'); }
+            var comboProcVal = document.getElementById('combo-proc-value');
+            if (comboProcVal) { comboProcVal.textContent = 'Selecione...'; comboProcVal.classList.add('placeholder'); }
+            document.querySelectorAll('#combo-tipo-list .combo-item, #combo-proc-list .combo-item').forEach(function(i) { i.classList.remove('selected'); });
+            document.getElementById('triage-urgencia-info').style.display = 'none';
+
+            // Start REC timer
+            recSeconds = 0;
+            document.getElementById('rec-timer').textContent = '00:00';
+            if (recTimerInterval) clearInterval(recTimerInterval);
+            recTimerInterval = setInterval(function() {
+                recSeconds++;
+                var m = Math.floor(recSeconds / 60).toString().padStart(2, '0');
+                var s = (recSeconds % 60).toString().padStart(2, '0');
+                document.getElementById('rec-timer').textContent = m + ':' + s;
+            }, 1000);
+
+            // Reset PiP state
+            var vp = document.getElementById('videoPanel');
+            var pt = document.getElementById('pipThumbnail');
+            if (vp) vp.classList.remove('pip');
+            if (pt) pt.classList.remove('visible');
+        }
+
+        function closeTriageCall() {
+            document.getElementById('triage-overlay').classList.remove('open');
+            if (recTimerInterval) {
+                clearInterval(recTimerInterval);
+                recTimerInterval = null;
+            }
+        }
+
+        function saveAndForward() {
+            closeTriageCall();
+            showToast('Triagem salva e encaminhada com sucesso');
+        }
+
+        // ===== SEARCHABLE COMBOBOX =====
+        function openCombo(id) {
+            var isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                // Open modal
+                var modal = document.getElementById('combo-' + id + '-modal');
+                if (modal) {
+                    modal.classList.add('open');
+                    var search = document.getElementById('combo-' + id + '-modal-search');
+                    if (search) { search.value = ''; filterComboModal(id); setTimeout(function(){ search.focus(); }, 100); }
+                }
+            } else {
+                // Toggle desktop dropdown
+                var trigger = document.querySelector('#combo-' + id + ' .combo-trigger');
+                var dropdown = document.getElementById('combo-' + id + '-dropdown');
+                var isOpen = dropdown.classList.contains('open');
+                closeAllCombos();
+                if (!isOpen) {
+                    trigger.classList.add('open');
+                    dropdown.classList.add('open');
+                    var search = document.getElementById('combo-' + id + '-search');
+                    if (search) { search.value = ''; filterCombo(id); setTimeout(function(){ search.focus(); }, 50); }
+                }
+            }
+        }
+        function closeAllCombos() {
+            document.querySelectorAll('.combo-dropdown').forEach(function(d) { d.classList.remove('open'); });
+            document.querySelectorAll('.combo-trigger').forEach(function(t) { t.classList.remove('open'); });
+        }
+        function filterCombo(id) {
+            var search = document.getElementById('combo-' + id + '-search').value.toLowerCase();
+            var items = document.querySelectorAll('#combo-' + id + '-list .combo-item');
+            var hasVisible = false;
+            items.forEach(function(item) {
+                var match = item.textContent.toLowerCase().indexOf(search) !== -1;
+                item.classList.toggle('hidden', !match);
+                if (match) hasVisible = true;
+            });
+            var empty = document.querySelector('#combo-' + id + '-dropdown .combo-empty');
+            if (empty) empty.style.display = hasVisible ? 'none' : 'block';
+        }
+        function selectCombo(id, item) {
+            var value = item.getAttribute('data-value');
+            var text = item.textContent;
+            var valueEl = document.getElementById('combo-' + id + '-value');
+            valueEl.textContent = text;
+            valueEl.classList.remove('placeholder');
+            document.getElementById('triage-' + id).value = value;
+            // Mark selected
+            document.querySelectorAll('#combo-' + id + '-list .combo-item').forEach(function(i) { i.classList.remove('selected'); });
+            item.classList.add('selected');
+            closeAllCombos();
+            // Trigger urgencia/SLA display only for tipo
+            if (id === 'tipo') applyTipoData(item);
+        }
+        function closeComboModal(id) {
+            var modal = document.getElementById('combo-' + id + '-modal');
+            if (modal) modal.classList.remove('open');
+        }
+        function filterComboModal(id) {
+            var search = document.getElementById('combo-' + id + '-modal-search').value.toLowerCase();
+            var items = document.querySelectorAll('#combo-' + id + '-modal-list .combo-modal-item');
+            var hasVisible = false;
+            items.forEach(function(item) {
+                var match = item.querySelector('.combo-modal-item-name').textContent.toLowerCase().indexOf(search) !== -1;
+                item.classList.toggle('hidden', !match);
+                if (match) hasVisible = true;
+            });
+            var empty = document.getElementById('combo-' + id + '-modal-empty');
+            if (empty) empty.style.display = hasVisible ? 'none' : 'block';
+        }
+        function selectComboModal(id, item) {
+            var value = item.getAttribute('data-value');
+            var name = item.querySelector('.combo-modal-item-name').textContent;
+            var valueEl = document.getElementById('combo-' + id + '-value');
+            valueEl.textContent = name;
+            valueEl.classList.remove('placeholder');
+            document.getElementById('triage-' + id).value = value;
+            closeComboModal(id);
+            if (id === 'tipo') applyTipoData(item);
+        }
+        function applyTipoData(item) {
+            var urgencia = item.getAttribute('data-urgencia');
+            var sla = item.getAttribute('data-sla');
+            var info = document.getElementById('triage-urgencia-info');
+            if (!urgencia) { info.style.display = 'none'; return; }
+            document.getElementById('triage-urgencia-label').textContent = urgencia;
+            document.getElementById('triage-sla-label').textContent = sla === '0' ? 'Imediato' : sla + ' minutos';
+            var colorMap = { 'Emergência': 'var(--emergency)', 'Urgência': 'var(--urgent)', 'Incidente': 'var(--urgent)', 'Não grave': 'var(--routine)' };
+            document.getElementById('triage-urgencia-label').style.color = colorMap[urgencia] || 'var(--text-primary)';
+            info.style.display = 'block';
+        }
+        // Close dropdown on click outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.combo-search')) closeAllCombos();
+        });
+
+        // Tipo de Atendimento → auto urgência/SLA (legacy, kept for compatibility)
+        function onTipoChange(sel) {
+            var opt = sel.options[sel.selectedIndex];
+            var info = document.getElementById('triage-urgencia-info');
+            if (!opt.value) {
+                info.style.display = 'none';
+                return;
+            }
+            var urgencia = opt.getAttribute('data-urgencia');
+            var sla = opt.getAttribute('data-sla');
+            document.getElementById('triage-urgencia-label').textContent = urgencia;
+            document.getElementById('triage-sla-label').textContent = sla === '0' ? 'Imediato' : sla + ' minutos';
+
+            // Color by urgency
+            var colorMap = { 'Emergência': 'var(--emergency)', 'Urgência': 'var(--urgent)', 'Incidente': 'var(--urgent)', 'Não grave': 'var(--routine)' };
+            document.getElementById('triage-urgencia-label').style.color = colorMap[urgencia] || 'var(--text-primary)';
+            info.style.display = 'block';
+        }
+
+        // PiP toggle
+        function togglePip() {
+            var video = document.getElementById('videoPanel');
+            var thumb = document.getElementById('pipThumbnail');
+            var pipIcon = document.getElementById('pipIcon');
+            var isPip = video.classList.contains('pip');
+            if (isPip) {
+                video.classList.remove('pip');
+                thumb.classList.remove('visible');
+                if (pipIcon) pipIcon.textContent = 'picture_in_picture_alt';
+            } else {
+                video.classList.add('pip');
+                thumb.classList.add('visible');
+                if (pipIcon) pipIcon.textContent = 'open_in_full';
+            }
+        }
+
+        // ===== 9. CARD CLICK HANDLER =====
+        function handleCardClick(name, info, action) {
+            if (document.body.classList.contains('kiosk-mode')) {
+                // Kiosk: pede PIN
+                openPin(name, info, action);
+            } else {
+                // Normal: enfermeira já logada, executa direto
+                var nurse = sessionStorage.getItem('ncall_user') || 'Enfermeira';
+                if (action === 'start') {
+                    handleStartAssistance(name, info, nurse);
+                } else {
+                    handleFinishAssistance(name);
+                }
+            }
+        }
+
+        // ===== 10. PIN (kiosk only) =====
+        var pinCode = '';
+        var pinAction = 'start';
+        var pinPatientName = '';
+        var pinPatientInfo = '';
+        var pinValidating = false;
+
+        var validPins = {
+            '1234': 'Ana L.',
+            '5678': 'Fernando S.'
+        };
+
+        function openPin(name, info, action) {
+            pinCode = '';
+            pinAction = action;
+            pinPatientName = name;
+            pinPatientInfo = info;
+            pinValidating = false;
+
+            document.getElementById('pin-patient-name').textContent = name;
+            document.getElementById('pin-patient-info').textContent = info;
+
+            var badge = document.getElementById('pin-action-badge');
+            if (action === 'start') {
+                badge.className = 'pin-action pin-action-start';
+                badge.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;">play_arrow</span> Iniciar assistência';
+            } else {
+                badge.className = 'pin-action pin-action-finish';
+                badge.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;">stop</span> Finalizar assistência';
+            }
+
+            updatePinDisplay();
+            document.getElementById('pin-display').classList.remove('pin-error');
+            document.getElementById('pin-error-msg').style.display = 'none';
+            document.getElementById('pin-modal').classList.add('open');
+        }
+
+        function closePin() {
+            document.getElementById('pin-modal').classList.remove('open');
+            pinCode = '';
+        }
+
+        function pinInput(n) {
+            if (pinValidating) return;
+            if (pinCode.length >= 4) return;
+            pinCode += n.toString();
+            updatePinDisplay();
+
+            // Auto-validate on 4th digit
+            if (pinCode.length === 4) {
+                pinValidating = true;
+                setTimeout(function() { validatePin(); }, 300);
+            }
+        }
+
+        function pinClear() {
+            if (pinValidating) return;
+            pinCode = pinCode.slice(0, -1);
+            updatePinDisplay();
+        }
+
+        function updatePinDisplay() {
+            for (var i = 0; i < 4; i++) {
+                var d = document.getElementById('pin-d' + i);
+                d.textContent = pinCode[i] ? '\u2022' : '';
+                d.classList.remove('filled', 'current');
+                if (i < pinCode.length) d.classList.add('filled');
+                if (i === pinCode.length) d.classList.add('current');
+            }
+        }
+
+        function validatePin() {
+            var nurse = validPins[pinCode];
+            if (nurse) {
+                // Success
+                closePin();
+                if (pinAction === 'start') {
+                    handleStartAssistance(pinPatientName, pinPatientInfo, nurse);
+                } else {
+                    handleFinishAssistance(pinPatientName);
+                }
+            } else {
+                // Error
+                document.getElementById('pin-display').classList.add('pin-error');
+                document.getElementById('pin-error-msg').style.display = 'block';
+                setTimeout(function() {
+                    pinCode = '';
+                    pinValidating = false;
+                    document.getElementById('pin-display').classList.remove('pin-error');
+                    document.getElementById('pin-error-msg').style.display = 'none';
+                    updatePinDisplay();
+                }, 800);
+            }
+        }
+
+        // ===== 10. CARD TRANSITIONS =====
+        function handleStartAssistance(name, info, nurse) {
+            // Find and remove from Aguardando
+            var slug = nameToSlug(name);
+            var aguardCard = document.getElementById('card-aguard-' + slug);
+            if (aguardCard) aguardCard.remove();
+
+            // Create new card in Em Atendimento
+            var listAtend = document.getElementById('list-atendimento');
+            var newCard = document.createElement('div');
+            newCard.className = 'assist-card';
+            newCard.id = 'card-atend-' + slug;
+            newCard.setAttribute('onclick', "handleCardClick('" + name + "', '" + info + "', 'finish')");
+            newCard.innerHTML =
+                '<div class="priority-bar" style="background: var(--calling);"></div>' +
+                '<div class="card-body">' +
+                    '<h4>' + name + '</h4>' +
+                    '<div class="card-details">' +
+                        '<span><span class="material-symbols-outlined">bed</span> ' + info + '</span>' +
+                        '<span class="attendant-tag">' + nurse + '</span>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="card-right">' +
+                    '<span class="status-pill status-active"><span class="dot"></span>Em atendimento</span>' +
+                    '<span class="card-time">00:00</span>' +
+                '</div>';
+            listAtend.appendChild(newCard);
+
+            updateBadges();
+            showToast('Assistência iniciada por ' + nurse);
+        }
+
+        function handleFinishAssistance(name) {
+            var slug = nameToSlug(name);
+            var atendCard = document.getElementById('card-atend-' + slug);
+            if (atendCard) atendCard.remove();
+
+            updateBadges();
+            showToast('Atendimento finalizado para ' + name);
+        }
+
+        function nameToSlug(name) {
+            return name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(' ')[0];
+        }
+
+        function updateBadges() {
+            var aguardCount = document.querySelectorAll('#list-aguardando .assist-card').length;
+            var atendCount = document.querySelectorAll('#list-atendimento .assist-card').length;
+            var total = aguardCount + atendCount;
+
+            document.getElementById('badge-aguardando').textContent = aguardCount;
+            document.getElementById('badge-atendimento').textContent = atendCount;
+            document.getElementById('nav-badge-assistencia').textContent = total;
+
+            // Kiosk badges
+            var kioskAg = document.getElementById('kiosk-badge-aguardando');
+            var kioskAt = document.getElementById('kiosk-badge-atendimento');
+            if (kioskAg) kioskAg.textContent = aguardCount;
+            if (kioskAt) kioskAt.textContent = atendCount;
+        }
+
+        // ===== 11. CRUD MODAL =====
+        function openCrudModal() {
+            document.getElementById('crud-modal').classList.add('open');
+        }
+
+        function closeCrudModal() {
+            document.getElementById('crud-modal').classList.remove('open');
+        }
+
+        // ===== 12. TOAST =====
+        function showToast(msg) {
+            var toast = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+
+</body>
+</html>

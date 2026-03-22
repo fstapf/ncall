@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n.Call — Component Reference</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1B6EC2;
+            --primary-light: #E8F1FB;
+            --primary-dark: #134E8A;
+            --surface: #FFFFFF;
+            --background: #F5F7FA;
+            --text-primary: #1A1A2E;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --emergency: #DC2626;
+            --emergency-bg: #FEF2F2;
+            --urgent: #F59E0B;
+            --urgent-bg: #FFFBEB;
+            --moderate: #3B82F6;
+            --moderate-bg: #EFF6FF;
+            --routine: #10B981;
+            --routine-bg: #ECFDF5;
+            --calling: #8B5CF6;
+            --calling-bg: #F5F3FF;
+            --font-family: 'Inter', sans-serif;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        [data-theme="dark"] {
+            --primary: #4A9AE8;
+            --primary-light: #1A2A3F;
+            --primary-dark: #6DB3F5;
+            --surface: #1E1E2E;
+            --background: #14141F;
+            --text-primary: #E8E8F0;
+            --text-secondary: #9CA3AF;
+            --border: #2D2D3F;
+            --emergency-bg: #2D1616;
+            --urgent-bg: #2D2516;
+            --moderate-bg: #162035;
+            --routine-bg: #162D24;
+            --calling-bg: #1E1635;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--background);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-size: 20px;
+            vertical-align: middle;
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* ===== SIDEBAR TREE NAV ===== */
+        .tree-sidebar {
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            height: 100vh;
+            position: fixed;
+            left: 0; top: 0;
+            overflow-y: auto;
+            z-index: 50;
+            transition: transform 0.3s;
+        }
+        .tree-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .tree-brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .tree-brand em { font-weight: 300; font-style: normal; color: var(--text-secondary); }
+        .tree-subtitle {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        .tree-back {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--primary);
+            text-decoration: none;
+            margin-top: 12px;
+            cursor: pointer;
+        }
+        .tree-back:hover { text-decoration: underline; }
+        .tree-back .material-symbols-outlined { font-size: 16px; }
+
+        .tree-nav { padding: 12px 0; }
+        .tree-category {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            padding: 16px 20px 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+        }
+        .tree-category .material-symbols-outlined {
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        .tree-category.collapsed .material-symbols-outlined { transform: rotate(-90deg); }
+        .tree-items { overflow: hidden; transition: max-height 0.3s; }
+        .tree-category.collapsed + .tree-items { max-height: 0 !important; }
+        .tree-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 20px 8px 32px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+            border-left: 3px solid transparent;
+        }
+        .tree-item:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+        .tree-item.active {
+            color: var(--primary);
+            background: var(--primary-light);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+        .tree-item .material-symbols-outlined { font-size: 18px; }
+        .tree-item .count {
+            margin-left: auto;
+            font-size: 11px;
+            background: var(--background);
+            color: var(--text-secondary);
+            padding: 1px 6px;
+            border-radius: 50px;
+        }
+
+        /* ===== MOBILE SIDEBAR TOGGLE ===== */
+        .tree-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            align-items: center;
+            justify-content: center;
+        }
+        .tree-toggle .material-symbols-outlined { font-size: 24px; }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            min-width: 0;
+        }
+        .main-header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .main-header h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .header-actions { display: flex; gap: 8px; }
+        .theme-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            background: var(--background);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-family: var(--font-family);
+            font-size: 12px;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+        .theme-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .theme-btn .material-symbols-outlined { font-size: 16px; }
+
+        .page-content { padding: 32px; max-width: 960px; }
+
+        /* ===== COMPONENT SECTION (each "page") ===== */
+        .comp-section { display: none; }
+        .comp-section.active { display: block; }
+
+        .comp-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .comp-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        /* Preview box */
+        .preview-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 32px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+        .preview-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* CSS Code Block */
+        .css-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-family: var(--font-family);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            margin-bottom: 16px;
+        }
+        .css-toggle:hover { border-color: var(--primary); color: var(--primary); }
+        .css-toggle .material-symbols-outlined { font-size: 16px; }
+        .css-block {
+            display: none;
+            position: relative;
+            background: #1e1e2e;
+            color: #cdd6f4;
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 12.5px;
+            line-height: 1.7;
+        }
+        .css-block.open { display: block; }
+        .css-block .kw { color: #cba6f7; }
+        .css-block .val { color: #a6e3a1; }
+        .css-block .sel { color: #89b4fa; }
+        .css-block .cmt { color: #585b70; font-style: italic; }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #cdd6f4;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: var(--font-family);
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .copy-btn:hover { background: rgba(255,255,255,0.2); }
+        .copy-btn .material-symbols-outlined { font-size: 14px; }
+
+        /* Sub-component cards */
+        .variant-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .variant-row.col { flex-direction: column; align-items: stretch; }
+
+        /* ===== FOUNDATION SPECIFIC ===== */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .swatch {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: box-shadow 0.2s, transform 0.2s;
+            cursor: pointer;
+        }
+        .swatch:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .swatch-color {
+            height: 64px;
+            display: flex;
+            align-items: flex-end;
+            padding: 6px 10px;
+        }
+        .swatch-color .hex {
+            font-size: 11px;
+            font-weight: 600;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            background: rgba(255,255,255,0.85);
+            color: #1A1A2E;
+            padding: 1px 6px;
+            border-radius: 3px;
+        }
+        .swatch-info { padding: 10px; }
+        .swatch-info .name { font-size: 12px; font-weight: 600; }
+        .swatch-info .token { font-size: 10px; color: var(--text-secondary); font-family: monospace; margin-top: 1px; }
+
+        /* Spacing bars */
+        .spacing-demos { display: flex; gap: 8px; align-items: flex-end; }
+        .spacing-bar {
+            background: var(--primary); opacity: 0.6; width: 24px; border-radius: 3px 3px 0 0;
+            display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px;
+            font-size: 9px; color: white; font-weight: 600;
+        }
+        .radius-demos { display: flex; gap: 16px; align-items: flex-end; }
+        .radius-box {
+            width: 64px; height: 48px; background: var(--primary-light); border: 2px solid var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; color: var(--primary); font-weight: 600;
+        }
+        .shadow-demos { display: flex; gap: 20px; align-items: center; }
+        .shadow-box {
+            width: 80px; height: 56px; background: var(--surface); border-radius: var(--radius-md);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; color: var(--text-secondary); font-weight: 500;
+        }
+
+        /* Typography samples */
+        .type-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .type-row:last-child { border-bottom: none; }
+        .type-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-family: monospace;
+            min-width: 130px;
+            flex-shrink: 0;
+        }
+        .type-preview { flex: 1; text-align: right; }
+
+        /* Urgency badges */
+        .urgency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 10px;
+        }
+        .urgency-badge {
+            display: flex; align-items: center; gap: 10px; padding: 14px;
+            border-radius: var(--radius-md); background: var(--surface);
+            border: 1px solid var(--border);
+        }
+        .urgency-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+        .urgency-dot.pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
+        .urgency-info .label { font-size: 13px; font-weight: 600; }
+        .urgency-info .desc { font-size: 11px; color: var(--text-secondary); }
+
+        /* ===== WIDGET SPECIFIC ===== */
+        /* Inline button styles */
+        .btn {
+            font-family: var(--font-family); font-size: 14px; font-weight: 500;
+            padding: 10px 20px; border-radius: var(--radius-sm); border: none;
+            cursor: pointer; transition: all 0.2s; display: inline-flex;
+            align-items: center; gap: 8px;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); box-shadow: var(--shadow-md); }
+        .btn-secondary { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+        .btn-secondary:hover { background: var(--primary-light); }
+        .btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
+        .btn-ghost:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+        .btn-danger { background: var(--emergency); color: white; }
+        .btn-sm { font-size: 12px; padding: 6px 14px; }
+
+        /* Form components */
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
+        .form-input {
+            width: 100%; font-family: var(--font-family); font-size: 14px;
+            padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+            background: var(--surface); color: var(--text-primary); transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+        }
+        .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,110,194,0.12); }
+        .form-input::placeholder { color: var(--text-secondary); opacity: 0.6; }
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 8.5L1 3.5h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        /* Status pill */
+        .status-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 600;
+        }
+        .status-pill .dot { width: 7px; height: 7px; border-radius: 50%; }
+        .status-emergency { background: var(--emergency-bg); color: var(--emergency); }
+        .status-emergency .dot { background: var(--emergency); }
+        .status-urgent { background: var(--urgent-bg); color: var(--urgent); }
+        .status-urgent .dot { background: var(--urgent); }
+        .status-moderate { background: var(--moderate-bg); color: var(--moderate); }
+        .status-moderate .dot { background: var(--moderate); }
+        .status-routine { background: var(--routine-bg); color: var(--routine); }
+        .status-routine .dot { background: var(--routine); }
+        .status-calling { background: var(--calling-bg); color: var(--calling); }
+        .status-calling .dot { background: var(--calling); animation: pulse 2s infinite; }
+
+        /* Icon button */
+        .icon-btn {
+            position: relative; display: inline-flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+            background: var(--surface); color: var(--text-secondary); cursor: pointer; transition: all 0.15s;
+        }
+        .icon-btn .material-symbols-outlined { font-size: 18px; }
+        .icon-btn:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+        .icon-btn.danger:hover { background: var(--emergency-bg); color: var(--emergency); border-color: var(--emergency); }
+        .icon-btn.success:hover { background: var(--routine-bg); color: var(--routine); border-color: var(--routine); }
+        .icon-btn::after {
+            content: attr(data-tooltip); position: absolute; bottom: calc(100% + 6px);
+            left: 50%; transform: translateX(-50%) scale(0.9);
+            background: var(--text-primary); color: var(--surface);
+            font-family: var(--font-family); font-size: 11px; font-weight: 500;
+            padding: 4px 10px; border-radius: 4px; white-space: nowrap;
+            opacity: 0; pointer-events: none; transition: opacity 0.15s, transform 0.15s;
+        }
+        .icon-btn:hover::after { opacity: 1; transform: translateX(-50%) scale(1); }
+        .icon-btn-group { display: flex; gap: 4px; }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 16px; background: var(--surface);
+            border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+        }
+        .toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 8px; }
+        .toolbar-divider { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+
+        /* Table */
+        .table-preview { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .table-preview th {
+            text-align: left; font-size: 12px; font-weight: 600; color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px;
+            border-bottom: 2px solid var(--border);
+        }
+        .table-preview td { font-size: 14px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+        .table-preview tr:hover td { background: var(--primary-light); }
+        .table-preview tr:last-child td { border-bottom: none; }
+
+        /* Card styles */
+        .call-card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+            padding: 20px; display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 10px; transition: box-shadow 0.2s, border-color 0.2s; cursor: pointer;
+        }
+        .call-card:hover { box-shadow: var(--shadow-md); border-color: var(--primary); }
+        .call-card.calling { border-left: 4px solid var(--calling); animation: card-glow 2s infinite; }
+        @keyframes card-glow { 0%,100%{box-shadow:var(--shadow-sm)} 50%{box-shadow:0 0 16px rgba(139,92,246,0.2)} }
+        .call-info h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .call-info p { font-size: 13px; color: var(--text-secondary); }
+        .call-meta { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+        .call-time { font-size: 12px; color: var(--text-secondary); }
+
+        /* Combo search (inline preview) */
+        .combo-search { position: relative; }
+        .combo-trigger {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+            background: var(--surface); cursor: pointer; font-size: 14px; color: var(--text-primary);
+            transition: border-color 0.2s, box-shadow 0.2s; font-family: var(--font-family);
+        }
+        .combo-trigger:hover { border-color: var(--primary); }
+        .combo-trigger.open { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,110,194,0.12); }
+        .combo-value { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .combo-value.placeholder { color: var(--text-secondary); opacity: 0.6; }
+        .combo-arrow { font-size: 18px; color: var(--text-secondary); transition: transform 0.2s; }
+        .combo-trigger.open .combo-arrow { transform: rotate(180deg); }
+        .combo-dropdown {
+            display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+            background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg); z-index: 20; overflow: hidden;
+        }
+        .combo-dropdown.open { display: block; }
+        .combo-search-input-wrap {
+            display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .combo-search-input-wrap .material-symbols-outlined { font-size: 18px; color: var(--text-secondary); }
+        .combo-search-input {
+            flex: 1; border: none; outline: none; font-family: var(--font-family);
+            font-size: 13px; color: var(--text-primary); background: transparent;
+        }
+        .combo-search-input::placeholder { color: var(--text-secondary); opacity: 0.6; }
+        .combo-list { max-height: 200px; overflow-y: auto; padding: 4px 0; }
+        .combo-item { padding: 9px 14px; font-size: 13px; cursor: pointer; transition: background 0.1s; }
+        .combo-item:hover { background: var(--primary-light); color: var(--primary); }
+        .combo-item.selected { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+        .combo-empty { padding: 16px; text-align: center; font-size: 13px; color: var(--text-secondary); }
+
+        /* Modal */
+        .modal-backdrop {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100;
+            display: none; align-items: center; justify-content: center;
+        }
+        .modal-backdrop.open { display: flex; }
+        .modal {
+            background: var(--surface); border-radius: var(--radius-lg); width: 90%;
+            max-width: 520px; max-height: 80vh; display: flex; flex-direction: column;
+            box-shadow: var(--shadow-lg); overflow: hidden;
+        }
+        .modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; border-bottom: 1px solid var(--border);
+        }
+        .modal-header h3 { font-size: 16px; font-weight: 600; }
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+        .modal-footer {
+            padding: 12px 20px; border-top: 1px solid var(--border);
+            display: flex; justify-content: flex-end; gap: 8px;
+        }
+        .modal-close {
+            display: flex; align-items: center; justify-content: center;
+            width: 32px; height: 32px; border-radius: var(--radius-sm);
+            border: none; background: none; color: var(--text-secondary);
+            cursor: pointer; transition: all 0.15s;
+        }
+        .modal-close:hover { background: var(--emergency-bg); color: var(--emergency); }
+
+        /* Modal search (mobile combo) */
+        .modal-search-input {
+            width: 100%; padding: 12px 14px 12px 40px; border: 1px solid var(--border);
+            border-radius: var(--radius-sm); font-family: var(--font-family); font-size: 14px;
+            color: var(--text-primary); background: var(--surface); outline: none;
+            transition: border-color 0.2s;
+        }
+        .modal-search-input:focus { border-color: var(--primary); }
+        .modal-search-wrap { position: relative; margin-bottom: 16px; }
+        .modal-search-wrap .material-symbols-outlined {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            font-size: 18px; color: var(--text-secondary); pointer-events: none;
+        }
+        .combo-modal-item {
+            padding: 12px 16px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.1s;
+        }
+        .combo-modal-item:last-child { border-bottom: none; }
+        .combo-modal-item:hover { background: var(--primary-light); }
+        .combo-modal-item-name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+        .combo-modal-item-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); }
+
+        /* Sidebar preview */
+        .sidebar-preview-box {
+            background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+            width: 240px; padding: 20px 0; box-shadow: var(--shadow-sm);
+        }
+        .sp-brand { padding: 0 20px 16px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+        .sp-brand .name { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+        .sp-brand .name em { font-weight: 300; font-style: normal; color: var(--text-secondary); }
+        .sp-brand .sub { font-size: 11px; color: var(--text-secondary); }
+        .sp-section {
+            font-size: 11px; font-weight: 600; color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: 1px; padding: 14px 20px 6px; opacity: 0.7;
+        }
+        .sp-item {
+            display: flex; align-items: center; gap: 12px; padding: 9px 20px;
+            font-size: 13px; color: var(--text-secondary); cursor: pointer;
+            transition: all 0.15s; border-left: 3px solid transparent;
+        }
+        .sp-item:hover { color: var(--primary); background: var(--primary-light); }
+        .sp-item.active { color: var(--primary); background: var(--primary-light); border-left-color: var(--primary); font-weight: 600; }
+        .sp-item .material-symbols-outlined { font-size: 20px; width: 22px; text-align: center; }
+        .sp-badge {
+            margin-left: auto; background: var(--calling); color: white;
+            font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 50px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .tree-sidebar { transform: translateX(-100%); }
+            .tree-sidebar.open { transform: translateX(0); }
+            .tree-toggle { display: flex; }
+            .main-content { margin-left: 0; }
+            .page-content { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR TREE NAV ===== -->
+<aside class="tree-sidebar" id="tree-sidebar">
+    <div class="tree-header">
+        <div class="tree-brand">n<em>.Call</em></div>
+        <div class="tree-subtitle">Component Reference</div>
+        <a class="tree-back" href="app.html">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Voltar ao Protótipo
+        </a>
+    </div>
+    <nav class="tree-nav">
+
+        <!-- FOUNDATIONS -->
+        <div class="tree-category" onclick="toggleCategory(this)">
+            <span class="material-symbols-outlined">expand_more</span>
+            Foundations
+        </div>
+        <div class="tree-items" style="max-height:400px;">
+            <div class="tree-item active" onclick="showComp('colors', this)">
+                <span class="material-symbols-outlined">palette</span>
+                Cores
+            </div>
+            <div class="tree-item" onclick="showComp('urgency', this)">
+                <span class="material-symbols-outlined">warning</span>
+                Cores de Urgência
+            </div>
+            <div class="tree-item" onclick="showComp('typography', this)">
+                <span class="material-symbols-outlined">text_fields</span>
+                Tipografia
+            </div>
+            <div class="tree-item" onclick="showComp('tokens', this)">
+                <span class="material-symbols-outlined">space_bar</span>
+                Espaçamento / Bordas / Sombras
+            </div>
+        </div>
+
+        <!-- LAYOUTS -->
+        <div class="tree-category" onclick="toggleCategory(this)">
+            <span class="material-symbols-outlined">expand_more</span>
+            Layouts
+        </div>
+        <div class="tree-items" style="max-height:400px;">
+            <div class="tree-item" onclick="showComp('sidebar', this)">
+                <span class="material-symbols-outlined">side_navigation</span>
+                Sidebar
+            </div>
+            <div class="tree-item" onclick="showComp('toolbar', this)">
+                <span class="material-symbols-outlined">toolbar</span>
+                Toolbar
+            </div>
+            <div class="tree-item" onclick="showComp('modal', this)">
+                <span class="material-symbols-outlined">open_in_new</span>
+                Modal / Dialog
+            </div>
+        </div>
+
+        <!-- WIDGETS — Form -->
+        <div class="tree-category" onclick="toggleCategory(this)">
+            <span class="material-symbols-outlined">expand_more</span>
+            Widgets — Form
+        </div>
+        <div class="tree-items" style="max-height:400px;">
+            <div class="tree-item" onclick="showComp('buttons', this)">
+                <span class="material-symbols-outlined">smart_button</span>
+                Botões
+            </div>
+            <div class="tree-item" onclick="showComp('inputs', this)">
+                <span class="material-symbols-outlined">input</span>
+                Inputs / Select
+            </div>
+            <div class="tree-item" onclick="showComp('combobox', this)">
+                <span class="material-symbols-outlined">search</span>
+                Combobox Pesquisável
+            </div>
+            <div class="tree-item" onclick="showComp('modal-search', this)">
+                <span class="material-symbols-outlined">pageview</span>
+                Modal de Pesquisa
+            </div>
+        </div>
+
+        <!-- WIDGETS — Data Display -->
+        <div class="tree-category" onclick="toggleCategory(this)">
+            <span class="material-symbols-outlined">expand_more</span>
+            Widgets — Data Display
+        </div>
+        <div class="tree-items" style="max-height:400px;">
+            <div class="tree-item" onclick="showComp('status-pills', this)">
+                <span class="material-symbols-outlined">label</span>
+                Status Pills
+            </div>
+            <div class="tree-item" onclick="showComp('table', this)">
+                <span class="material-symbols-outlined">table_rows</span>
+                Tabela
+            </div>
+            <div class="tree-item" onclick="showComp('cards', this)">
+                <span class="material-symbols-outlined">cards</span>
+                Cards de Chamada
+            </div>
+            <div class="tree-item" onclick="showComp('icon-buttons', this)">
+                <span class="material-symbols-outlined">touch_app</span>
+                Icon Buttons + Tooltips
+            </div>
+        </div>
+
+    </nav>
+</aside>
+
+<!-- Mobile toggle -->
+<button class="tree-toggle" onclick="document.getElementById('tree-sidebar').classList.toggle('open')">
+    <span class="material-symbols-outlined">menu</span>
+</button>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main-content">
+    <div class="main-header">
+        <h1 id="header-title">Cores — Paleta Principal</h1>
+        <div class="header-actions">
+            <button class="theme-btn" onclick="toggleTheme()">
+                <span class="material-symbols-outlined" id="theme-icon">dark_mode</span>
+                <span id="theme-label">Dark</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="page-content">
+
+        <!-- ==================== FOUNDATIONS ==================== -->
+
+        <!-- COLORS -->
+        <div class="comp-section active" id="sec-colors">
+            <div class="comp-title">Cores — Paleta Principal</div>
+            <div class="comp-desc">Tokens de cor utilizados em toda a aplicação. Use as variáveis CSS para manter consistência entre light e dark theme.</div>
+            <div class="preview-box">
+                <div class="color-grid">
+                    <div class="swatch"><div class="swatch-color" style="background:var(--primary);"><span class="hex">#1B6EC2</span></div><div class="swatch-info"><div class="name">Primary</div><div class="token">--primary</div></div></div>
+                    <div class="swatch"><div class="swatch-color" style="background:var(--primary-light);"><span class="hex">#E8F1FB</span></div><div class="swatch-info"><div class="name">Primary Light</div><div class="token">--primary-light</div></div></div>
+                    <div class="swatch"><div class="swatch-color" style="background:var(--primary-dark);"><span class="hex">#134E8A</span></div><div class="swatch-info"><div class="name">Primary Dark</div><div class="token">--primary-dark</div></div></div>
+                    <div class="swatch"><div class="swatch-color" style="background:var(--surface);border-bottom:1px solid var(--border);"><span class="hex">#FFFFFF</span></div><div class="swatch-info"><div class="name">Surface</div><div class="token">--surface</div></div></div>
+                    <div class="swatch"><div class="swatch-color" style="background:var(--background);border-bottom:1px solid var(--border);"><span class="hex">#F5F7FA</span></div><div class="swatch-info"><div class="name">Background</div><div class="token">--background</div></div></div>
+                    <div class="swatch"><div class="swatch-color" style="background:var(--text-primary);"><span class="hex">#1A1A2E</span></div><div class="swatch-info"><div class="name">Text Primary</div><div class="token">--text-primary</div></div></div>
+                    <div class="swatch"><div class="swatch-color" style="background:var(--text-secondary);"><span class="hex">#6B7280</span></div><div class="swatch-info"><div class="name">Text Secondary</div><div class="token">--text-secondary</div></div></div>
+                    <div class="swatch"><div class="swatch-color" style="background:var(--border);"><span class="hex">#E5E7EB</span></div><div class="swatch-info"><div class="name">Border</div><div class="token">--border</div></div></div>
+                </div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Design Tokens</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="sel">:root</span> {
+  <span class="kw">--primary</span>: <span class="val">#1B6EC2</span>;
+  <span class="kw">--primary-light</span>: <span class="val">#E8F1FB</span>;
+  <span class="kw">--primary-dark</span>: <span class="val">#134E8A</span>;
+  <span class="kw">--surface</span>: <span class="val">#FFFFFF</span>;
+  <span class="kw">--background</span>: <span class="val">#F5F7FA</span>;
+  <span class="kw">--text-primary</span>: <span class="val">#1A1A2E</span>;
+  <span class="kw">--text-secondary</span>: <span class="val">#6B7280</span>;
+  <span class="kw">--border</span>: <span class="val">#E5E7EB</span>;
+}
+
+<span class="sel">[data-theme="dark"]</span> {
+  <span class="kw">--primary</span>: <span class="val">#4A9AE8</span>;
+  <span class="kw">--primary-light</span>: <span class="val">#1A2A3F</span>;
+  <span class="kw">--primary-dark</span>: <span class="val">#6DB3F5</span>;
+  <span class="kw">--surface</span>: <span class="val">#1E1E2E</span>;
+  <span class="kw">--background</span>: <span class="val">#14141F</span>;
+  <span class="kw">--text-primary</span>: <span class="val">#E8E8F0</span>;
+  <span class="kw">--text-secondary</span>: <span class="val">#9CA3AF</span>;
+  <span class="kw">--border</span>: <span class="val">#2D2D3F</span>;
+}</pre></div>
+        </div>
+
+        <!-- URGENCY -->
+        <div class="comp-section" id="sec-urgency">
+            <div class="comp-title">Cores de Urgência / Status</div>
+            <div class="comp-desc">Paleta semântica para níveis de urgência e estados de chamada.</div>
+            <div class="preview-box">
+                <div class="urgency-grid">
+                    <div class="urgency-badge"><div class="urgency-dot" style="background:var(--emergency);"></div><div class="urgency-info"><div class="label" style="color:var(--emergency);">Emergência</div><div class="desc">Código de emergência</div></div></div>
+                    <div class="urgency-badge"><div class="urgency-dot" style="background:var(--urgent);"></div><div class="urgency-info"><div class="label" style="color:var(--urgent);">Urgência</div><div class="desc">Atendimento urgente</div></div></div>
+                    <div class="urgency-badge"><div class="urgency-dot" style="background:var(--moderate);"></div><div class="urgency-info"><div class="label" style="color:var(--moderate);">Tolerável</div><div class="desc">Não grave</div></div></div>
+                    <div class="urgency-badge"><div class="urgency-dot" style="background:var(--routine);"></div><div class="urgency-info"><div class="label" style="color:var(--routine);">Rotina</div><div class="desc">Finalizado, ativo</div></div></div>
+                    <div class="urgency-badge"><div class="urgency-dot pulse" style="background:var(--calling);"></div><div class="urgency-info"><div class="label" style="color:var(--calling);">Chamando...</div><div class="desc">Chamada ativa (pulsa)</div></div></div>
+                </div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Urgência Tokens</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="sel">:root</span> {
+  <span class="kw">--emergency</span>: <span class="val">#DC2626</span>;
+  <span class="kw">--emergency-bg</span>: <span class="val">#FEF2F2</span>;
+  <span class="kw">--urgent</span>: <span class="val">#F59E0B</span>;
+  <span class="kw">--urgent-bg</span>: <span class="val">#FFFBEB</span>;
+  <span class="kw">--moderate</span>: <span class="val">#3B82F6</span>;
+  <span class="kw">--moderate-bg</span>: <span class="val">#EFF6FF</span>;
+  <span class="kw">--routine</span>: <span class="val">#10B981</span>;
+  <span class="kw">--routine-bg</span>: <span class="val">#ECFDF5</span>;
+  <span class="kw">--calling</span>: <span class="val">#8B5CF6</span>;
+  <span class="kw">--calling-bg</span>: <span class="val">#F5F3FF</span>;
+}</pre></div>
+        </div>
+
+        <!-- TYPOGRAPHY -->
+        <div class="comp-section" id="sec-typography">
+            <div class="comp-title">Tipografia — Inter</div>
+            <div class="comp-desc">Escala tipográfica usando a fonte Inter. Todos os tamanhos em rem para acessibilidade.</div>
+            <div class="preview-box">
+                <div class="type-row"><span class="type-label">XL / 24px / 600</span><span class="type-preview" style="font-size:1.5rem;font-weight:600;">Atendimento Triagem</span></div>
+                <div class="type-row"><span class="type-label">LG / 18px / 600</span><span class="type-preview" style="font-size:1.125rem;font-weight:600;">Registro de Chamadas</span></div>
+                <div class="type-row"><span class="type-label">BASE / 16px / 400</span><span class="type-preview" style="font-size:1rem;font-weight:400;">Paciente Eduardo — Leito 101</span></div>
+                <div class="type-row"><span class="type-label">SM / 14px / 500</span><span class="type-preview" style="font-size:0.875rem;font-weight:500;">Troca de soro — Unidade Int.</span></div>
+                <div class="type-row"><span class="type-label">XS / 12px / 400</span><span class="type-preview" style="font-size:0.75rem;font-weight:400;color:var(--text-secondary);">22/03/2026 14:32 — Enf. Fernando</span></div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Font Family</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="sel">:root</span> {
+  <span class="kw">--font-family</span>: <span class="val">'Inter', sans-serif</span>;
+}
+
+<span class="cmt">/* Google Fonts import */</span>
+<span class="sel">@import</span> url(<span class="val">'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'</span>);</pre></div>
+        </div>
+
+        <!-- TOKENS -->
+        <div class="comp-section" id="sec-tokens">
+            <div class="comp-title">Espaçamento, Bordas e Sombras</div>
+            <div class="comp-desc">Tokens de layout para manter consistência visual em todos os componentes.</div>
+            <div class="preview-box">
+                <div class="preview-label">Border Radius</div>
+                <div class="radius-demos" style="margin-bottom:24px;">
+                    <div><div class="radius-box" style="border-radius:var(--radius-sm);">6px</div><div style="font-size:11px;color:var(--text-secondary);margin-top:6px;text-align:center;">sm</div></div>
+                    <div><div class="radius-box" style="border-radius:var(--radius-md);">10px</div><div style="font-size:11px;color:var(--text-secondary);margin-top:6px;text-align:center;">md</div></div>
+                    <div><div class="radius-box" style="border-radius:var(--radius-lg);">16px</div><div style="font-size:11px;color:var(--text-secondary);margin-top:6px;text-align:center;">lg</div></div>
+                </div>
+                <div class="preview-label">Shadows</div>
+                <div class="shadow-demos" style="margin-bottom:24px;">
+                    <div><div class="shadow-box" style="box-shadow:var(--shadow-sm);">sm</div></div>
+                    <div><div class="shadow-box" style="box-shadow:var(--shadow-md);">md</div></div>
+                    <div><div class="shadow-box" style="box-shadow:var(--shadow-lg);">lg</div></div>
+                </div>
+                <div class="preview-label">Spacing (base: 4px)</div>
+                <div class="spacing-demos">
+                    <div class="spacing-bar" style="height:16px;">4</div>
+                    <div class="spacing-bar" style="height:32px;">8</div>
+                    <div class="spacing-bar" style="height:48px;">12</div>
+                    <div class="spacing-bar" style="height:64px;">16</div>
+                    <div class="spacing-bar" style="height:96px;">24</div>
+                    <div class="spacing-bar" style="height:128px;">32</div>
+                </div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Tokens</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="sel">:root</span> {
+  <span class="kw">--radius-sm</span>: <span class="val">6px</span>;
+  <span class="kw">--radius-md</span>: <span class="val">10px</span>;
+  <span class="kw">--radius-lg</span>: <span class="val">16px</span>;
+  <span class="kw">--shadow-sm</span>: <span class="val">0 1px 2px rgba(0,0,0,0.05)</span>;
+  <span class="kw">--shadow-md</span>: <span class="val">0 4px 12px rgba(0,0,0,0.08)</span>;
+  <span class="kw">--shadow-lg</span>: <span class="val">0 8px 24px rgba(0,0,0,0.12)</span>;
+}</pre></div>
+        </div>
+
+        <!-- ==================== LAYOUTS ==================== -->
+
+        <!-- SIDEBAR -->
+        <div class="comp-section" id="sec-sidebar">
+            <div class="comp-title">Sidebar Navegação</div>
+            <div class="comp-desc">Sidebar responsiva: expandida (desktop), colapsada com tooltips (tablet), drawer com backdrop (mobile).</div>
+            <div class="preview-box">
+                <div class="sidebar-preview-box">
+                    <div class="sp-brand"><div class="name">n<em>.Call</em></div><div class="sub">Hospital Modelo</div></div>
+                    <div class="sp-section">Atendimento</div>
+                    <div class="sp-item active"><span class="material-symbols-outlined">e911_avatar</span> Triagem <span class="sp-badge">3</span></div>
+                    <div class="sp-item"><span class="material-symbols-outlined">home_health</span> Assistência <span class="sp-badge">5</span></div>
+                    <div class="sp-item"><span class="material-symbols-outlined">history</span> Registro</div>
+                    <div class="sp-section">Pessoas</div>
+                    <div class="sp-item"><span class="material-symbols-outlined">patient_list</span> Pacientes</div>
+                    <div class="sp-item"><span class="material-symbols-outlined">stethoscope</span> Enfermeiros</div>
+                    <div class="sp-section">Configuração</div>
+                    <div class="sp-item"><span class="material-symbols-outlined">medical_information</span> Tipos de Atendimento</div>
+                    <div class="sp-item"><span class="material-symbols-outlined">settings</span> Parâmetros</div>
+                </div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Sidebar</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="sel">.sidebar</span> {
+  <span class="kw">width</span>: <span class="val">260px</span>;
+  <span class="kw">background</span>: <span class="val">var(--surface)</span>;
+  <span class="kw">border-right</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="kw">height</span>: <span class="val">100vh</span>;
+  <span class="kw">position</span>: <span class="val">fixed</span>;
+  <span class="kw">overflow-y</span>: <span class="val">auto</span>;
+  <span class="kw">transition</span>: <span class="val">width 0.3s, transform 0.3s</span>;
+}
+
+<span class="sel">.nav-item</span> {
+  <span class="kw">display</span>: <span class="val">flex</span>;
+  <span class="kw">align-items</span>: <span class="val">center</span>;
+  <span class="kw">gap</span>: <span class="val">12px</span>;
+  <span class="kw">padding</span>: <span class="val">10px 20px</span>;
+  <span class="kw">font-size</span>: <span class="val">14px</span>;
+  <span class="kw">color</span>: <span class="val">var(--text-secondary)</span>;
+  <span class="kw">border-left</span>: <span class="val">3px solid transparent</span>;
+  <span class="kw">transition</span>: <span class="val">all 0.15s</span>;
+}
+
+<span class="sel">.nav-item.active</span> {
+  <span class="kw">color</span>: <span class="val">var(--primary)</span>;
+  <span class="kw">background</span>: <span class="val">var(--primary-light)</span>;
+  <span class="kw">border-left-color</span>: <span class="val">var(--primary)</span>;
+  <span class="kw">font-weight</span>: <span class="val">600</span>;
+}
+
+<span class="cmt">/* Tablet: collapsed */</span>
+<span class="sel">@media (max-width: 1024px)</span> {
+  <span class="sel">.sidebar</span> { <span class="kw">width</span>: <span class="val">64px</span>; }
+  <span class="sel">.nav-label</span> { <span class="kw">display</span>: <span class="val">none</span>; }
+}
+
+<span class="cmt">/* Mobile: drawer */</span>
+<span class="sel">@media (max-width: 768px)</span> {
+  <span class="sel">.sidebar</span> { <span class="kw">transform</span>: <span class="val">translateX(-100%)</span>; }
+  <span class="sel">.sidebar.open</span> { <span class="kw">transform</span>: <span class="val">translateX(0)</span>; }
+}</pre></div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="comp-section" id="sec-toolbar">
+            <div class="comp-title">Toolbar</div>
+            <div class="comp-desc">Barra de ferramentas com icon buttons, divisor e agrupamentos. Usada no topo de páginas CRUD e listas.</div>
+            <div class="preview-box">
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <button class="icon-btn" data-tooltip="Cadastrar"><span class="material-symbols-outlined">add</span></button>
+                        <button class="icon-btn" data-tooltip="Filtros"><span class="material-symbols-outlined">filter_list</span></button>
+                        <button class="icon-btn" data-tooltip="Limpar"><span class="material-symbols-outlined">filter_list_off</span></button>
+                        <button class="icon-btn" data-tooltip="Atualizar"><span class="material-symbols-outlined">refresh</span></button>
+                        <div class="toolbar-divider"></div>
+                        <button class="icon-btn" data-tooltip="Exportar"><span class="material-symbols-outlined">download</span></button>
+                    </div>
+                    <div class="toolbar-right">
+                        <button class="icon-btn" data-tooltip="Buscar"><span class="material-symbols-outlined">search</span></button>
+                    </div>
+                </div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Toolbar</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="sel">.toolbar</span> {
+  <span class="kw">display</span>: <span class="val">flex</span>;
+  <span class="kw">align-items</span>: <span class="val">center</span>;
+  <span class="kw">justify-content</span>: <span class="val">space-between</span>;
+  <span class="kw">padding</span>: <span class="val">12px 16px</span>;
+  <span class="kw">background</span>: <span class="val">var(--surface)</span>;
+  <span class="kw">border</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="kw">border-radius</span>: <span class="val">var(--radius-md)</span>;
+  <span class="kw">box-shadow</span>: <span class="val">var(--shadow-sm)</span>;
+}
+
+<span class="sel">.toolbar-left, .toolbar-right</span> {
+  <span class="kw">display</span>: <span class="val">flex</span>;
+  <span class="kw">align-items</span>: <span class="val">center</span>;
+  <span class="kw">gap</span>: <span class="val">8px</span>;
+}
+
+<span class="sel">.toolbar-divider</span> {
+  <span class="kw">width</span>: <span class="val">1px</span>;
+  <span class="kw">height</span>: <span class="val">24px</span>;
+  <span class="kw">background</span>: <span class="val">var(--border)</span>;
+}</pre></div>
+        </div>
+
+        <!-- MODAL -->
+        <div class="comp-section" id="sec-modal">
+            <div class="comp-title">Modal / Dialog</div>
+            <div class="comp-desc">Modal genérico com header, body scrollável e footer. Usado para cadastros CRUD, confirmações e PIN.</div>
+            <div class="preview-box">
+                <div style="position:relative;background:var(--background);border-radius:var(--radius-md);padding:20px;min-height:260px;display:flex;align-items:center;justify-content:center;">
+                    <div style="background:var(--surface);border-radius:var(--radius-lg);width:100%;max-width:480px;box-shadow:var(--shadow-lg);overflow:hidden;">
+                        <div class="modal-header">
+                            <h3>Cadastro de Tipo de Atendimento</h3>
+                            <button class="modal-close"><span class="material-symbols-outlined">close</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group"><label class="form-label">Tipo de Atendimento</label><input class="form-input" value="Assistência de enfermagem"></div>
+                            <div class="form-group"><label class="form-label">Grau Urgência</label><select class="form-input form-select"><option>Não grave</option><option>Urgência</option></select></div>
+                            <div class="form-group"><label class="form-label">SLA (minutos)</label><input class="form-input" type="number" value="10"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-ghost">Cancelar</button>
+                            <button class="btn btn-primary"><span class="material-symbols-outlined" style="font-size:16px;">save</span> Salvar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Modal</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="sel">.modal-backdrop</span> {
+  <span class="kw">position</span>: <span class="val">fixed</span>;
+  <span class="kw">inset</span>: <span class="val">0</span>;
+  <span class="kw">background</span>: <span class="val">rgba(0,0,0,0.5)</span>;
+  <span class="kw">z-index</span>: <span class="val">100</span>;
+  <span class="kw">display</span>: <span class="val">flex</span>;
+  <span class="kw">align-items</span>: <span class="val">center</span>;
+  <span class="kw">justify-content</span>: <span class="val">center</span>;
+}
+
+<span class="sel">.modal</span> {
+  <span class="kw">background</span>: <span class="val">var(--surface)</span>;
+  <span class="kw">border-radius</span>: <span class="val">var(--radius-lg)</span>;
+  <span class="kw">width</span>: <span class="val">90%</span>;
+  <span class="kw">max-width</span>: <span class="val">520px</span>;
+  <span class="kw">max-height</span>: <span class="val">80vh</span>;
+  <span class="kw">display</span>: <span class="val">flex</span>;
+  <span class="kw">flex-direction</span>: <span class="val">column</span>;
+  <span class="kw">box-shadow</span>: <span class="val">var(--shadow-lg)</span>;
+  <span class="kw">overflow</span>: <span class="val">hidden</span>;
+}
+
+<span class="sel">.modal-header</span> {
+  <span class="kw">padding</span>: <span class="val">16px 20px</span>;
+  <span class="kw">border-bottom</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="kw">display</span>: <span class="val">flex</span>;
+  <span class="kw">align-items</span>: <span class="val">center</span>;
+  <span class="kw">justify-content</span>: <span class="val">space-between</span>;
+}
+
+<span class="sel">.modal-body</span> { <span class="kw">padding</span>: <span class="val">20px</span>; <span class="kw">overflow-y</span>: <span class="val">auto</span>; }
+<span class="sel">.modal-footer</span> {
+  <span class="kw">padding</span>: <span class="val">12px 20px</span>;
+  <span class="kw">border-top</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="kw">display</span>: <span class="val">flex</span>;
+  <span class="kw">justify-content</span>: <span class="val">flex-end</span>;
+  <span class="kw">gap</span>: <span class="val">8px</span>;
+}</pre></div>
+        </div>
+
+        <!-- ==================== WIDGETS — FORM ==================== -->
+
+        <!-- BUTTONS -->
+        <div class="comp-section" id="sec-buttons">
+            <div class="comp-title">Botões</div>
+            <div class="comp-desc">Variantes de botão: primary, secondary, ghost e danger. Tamanhos padrão e small.</div>
+            <div class="preview-box">
+                <div class="variant-row" style="flex-wrap:wrap;gap:12px;">
+                    <button class="btn btn-primary"><span class="material-symbols-outlined" style="font-size:16px;">add</span> Cadastrar</button>
+                    <button class="btn btn-secondary"><span class="material-symbols-outlined" style="font-size:16px;">filter_list</span> Filtros</button>
+                    <button class="btn btn-ghost"><span class="material-symbols-outlined" style="font-size:16px;">filter_list_off</span> Limpar</button>
+                    <button class="btn btn-danger"><span class="material-symbols-outlined" style="font-size:16px;">delete</span> Excluir</button>
+                    <button class="btn btn-primary btn-sm"><span class="material-symbols-outlined" style="font-size:14px;">refresh</span> Atualizar</button>
+                </div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Botões</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="sel">.btn</span> {
+  <span class="kw">font-family</span>: <span class="val">var(--font-family)</span>;
+  <span class="kw">font-size</span>: <span class="val">14px</span>;
+  <span class="kw">font-weight</span>: <span class="val">500</span>;
+  <span class="kw">padding</span>: <span class="val">10px 20px</span>;
+  <span class="kw">border-radius</span>: <span class="val">var(--radius-sm)</span>;
+  <span class="kw">border</span>: <span class="val">none</span>;
+  <span class="kw">cursor</span>: <span class="val">pointer</span>;
+  <span class="kw">transition</span>: <span class="val">all 0.2s</span>;
+  <span class="kw">display</span>: <span class="val">inline-flex</span>;
+  <span class="kw">align-items</span>: <span class="val">center</span>;
+  <span class="kw">gap</span>: <span class="val">8px</span>;
+}
+
+<span class="sel">.btn-primary</span> { <span class="kw">background</span>: <span class="val">var(--primary)</span>; <span class="kw">color</span>: <span class="val">white</span>; }
+<span class="sel">.btn-primary:hover</span> { <span class="kw">background</span>: <span class="val">var(--primary-dark)</span>; }
+<span class="sel">.btn-secondary</span> { <span class="kw">background</span>: <span class="val">transparent</span>; <span class="kw">color</span>: <span class="val">var(--primary)</span>; <span class="kw">border</span>: <span class="val">1px solid var(--primary)</span>; }
+<span class="sel">.btn-ghost</span> { <span class="kw">background</span>: <span class="val">transparent</span>; <span class="kw">color</span>: <span class="val">var(--text-secondary)</span>; <span class="kw">border</span>: <span class="val">1px solid var(--border)</span>; }
+<span class="sel">.btn-danger</span> { <span class="kw">background</span>: <span class="val">var(--emergency)</span>; <span class="kw">color</span>: <span class="val">white</span>; }
+<span class="sel">.btn-sm</span> { <span class="kw">font-size</span>: <span class="val">12px</span>; <span class="kw">padding</span>: <span class="val">6px 14px</span>; }</pre></div>
+        </div>
+
+        <!-- INPUTS -->
+        <div class="comp-section" id="sec-inputs">
+            <div class="comp-title">Inputs / Select</div>
+            <div class="comp-desc">Campos de formulário padrão: text input, select nativo e textarea. Focus state com ring azul.</div>
+            <div class="preview-box">
+                <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;">
+                    <div class="form-group" style="flex:1;min-width:200px;">
+                        <label class="form-label">Paciente</label>
+                        <input type="text" class="form-input" placeholder="Nome do paciente" value="Eduardo Silva">
+                    </div>
+                    <div class="form-group" style="flex:1;min-width:200px;">
+                        <label class="form-label">Unidade</label>
+                        <select class="form-input form-select"><option>ALA A</option><option>ALA B</option></select>
+                    </div>
+                    <div class="form-group" style="flex:1;min-width:200px;">
+                        <label class="form-label">Data</label>
+                        <input type="text" class="form-input" value="22/03/2026">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Observações</label>
+                    <textarea class="form-input" style="min-height:60px;resize:vertical;" placeholder="Observações adicionais..."></textarea>
+                </div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Form Inputs</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="sel">.form-group</span> { <span class="kw">margin-bottom</span>: <span class="val">16px</span>; }
+<span class="sel">.form-label</span> {
+  <span class="kw">display</span>: <span class="val">block</span>;
+  <span class="kw">font-size</span>: <span class="val">13px</span>;
+  <span class="kw">font-weight</span>: <span class="val">500</span>;
+  <span class="kw">color</span>: <span class="val">var(--text-secondary)</span>;
+  <span class="kw">margin-bottom</span>: <span class="val">6px</span>;
+}
+
+<span class="sel">.form-input</span> {
+  <span class="kw">width</span>: <span class="val">100%</span>;
+  <span class="kw">font-family</span>: <span class="val">var(--font-family)</span>;
+  <span class="kw">font-size</span>: <span class="val">14px</span>;
+  <span class="kw">padding</span>: <span class="val">10px 14px</span>;
+  <span class="kw">border</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="kw">border-radius</span>: <span class="val">var(--radius-sm)</span>;
+  <span class="kw">background</span>: <span class="val">var(--surface)</span>;
+  <span class="kw">color</span>: <span class="val">var(--text-primary)</span>;
+  <span class="kw">outline</span>: <span class="val">none</span>;
+  <span class="kw">transition</span>: <span class="val">border-color 0.2s, box-shadow 0.2s</span>;
+}
+
+<span class="sel">.form-input:focus</span> {
+  <span class="kw">border-color</span>: <span class="val">var(--primary)</span>;
+  <span class="kw">box-shadow</span>: <span class="val">0 0 0 3px rgba(27,110,194,0.12)</span>;
+}</pre></div>
+        </div>
+
+        <!-- SEARCHABLE COMBOBOX -->
+        <div class="comp-section" id="sec-combobox">
+            <div class="comp-title">Combobox Pesquisável</div>
+            <div class="comp-desc">Combobox com busca inline para desktop. Substitui o TCombo/TDBCombo do Adianti quando a lista pode ser grande. No mobile/tablet, abre como Modal de Pesquisa.</div>
+            <div class="preview-box">
+                <div class="preview-label">Desktop — Dropdown com busca</div>
+                <div style="max-width:400px;">
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Atendimento</label>
+                        <div class="combo-search" id="demo-combo">
+                            <div class="combo-trigger open" onclick="toggleDemoCombo()">
+                                <span class="combo-value placeholder">Selecione...</span>
+                                <span class="material-symbols-outlined combo-arrow">expand_more</span>
+                            </div>
+                            <div class="combo-dropdown open" id="demo-dropdown">
+                                <div class="combo-search-input-wrap">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <input class="combo-search-input" placeholder="Buscar tipo..." oninput="filterDemoCombo(this.value)">
+                                </div>
+                                <div class="combo-list" id="demo-combo-list">
+                                    <div class="combo-item" onclick="selectDemoCombo(this)">Assistência de enfermagem</div>
+                                    <div class="combo-item" onclick="selectDemoCombo(this)">Código de Emergência</div>
+                                    <div class="combo-item" onclick="selectDemoCombo(this)">Intercorrência clínica</div>
+                                    <div class="combo-item" onclick="selectDemoCombo(this)">Queda de paciente</div>
+                                    <div class="combo-item" onclick="selectDemoCombo(this)">Solicitação de medicação</div>
+                                    <div class="combo-item" onclick="selectDemoCombo(this)">Troca de curativo</div>
+                                    <div class="combo-item" onclick="selectDemoCombo(this)">Verificação de sinais vitais</div>
+                                    <div class="combo-empty" style="display:none;">Nenhum resultado encontrado</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Combobox Pesquisável</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="sel">.combo-search</span> { <span class="kw">position</span>: <span class="val">relative</span>; }
+
+<span class="sel">.combo-trigger</span> {
+  <span class="kw">display</span>: <span class="val">flex</span>;
+  <span class="kw">align-items</span>: <span class="val">center</span>;
+  <span class="kw">justify-content</span>: <span class="val">space-between</span>;
+  <span class="kw">width</span>: <span class="val">100%</span>;
+  <span class="kw">padding</span>: <span class="val">10px 14px</span>;
+  <span class="kw">border</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="kw">border-radius</span>: <span class="val">var(--radius-sm)</span>;
+  <span class="kw">background</span>: <span class="val">var(--surface)</span>;
+  <span class="kw">cursor</span>: <span class="val">pointer</span>;
+  <span class="kw">font-size</span>: <span class="val">14px</span>;
+  <span class="kw">transition</span>: <span class="val">border-color 0.2s, box-shadow 0.2s</span>;
+}
+<span class="sel">.combo-trigger.open</span> {
+  <span class="kw">border-color</span>: <span class="val">var(--primary)</span>;
+  <span class="kw">box-shadow</span>: <span class="val">0 0 0 3px rgba(27,110,194,0.12)</span>;
+}
+
+<span class="sel">.combo-dropdown</span> {
+  <span class="kw">display</span>: <span class="val">none</span>;
+  <span class="kw">position</span>: <span class="val">absolute</span>;
+  <span class="kw">top</span>: <span class="val">calc(100% + 4px)</span>;
+  <span class="kw">left</span>: <span class="val">0</span>; <span class="kw">right</span>: <span class="val">0</span>;
+  <span class="kw">background</span>: <span class="val">var(--surface)</span>;
+  <span class="kw">border</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="kw">border-radius</span>: <span class="val">var(--radius-md)</span>;
+  <span class="kw">box-shadow</span>: <span class="val">var(--shadow-lg)</span>;
+  <span class="kw">z-index</span>: <span class="val">20</span>;
+}
+<span class="sel">.combo-dropdown.open</span> { <span class="kw">display</span>: <span class="val">block</span>; }
+
+<span class="sel">.combo-search-input-wrap</span> {
+  <span class="kw">display</span>: <span class="val">flex</span>;
+  <span class="kw">align-items</span>: <span class="val">center</span>;
+  <span class="kw">gap</span>: <span class="val">8px</span>;
+  <span class="kw">padding</span>: <span class="val">10px 12px</span>;
+  <span class="kw">border-bottom</span>: <span class="val">1px solid var(--border)</span>;
+}
+
+<span class="sel">.combo-search-input</span> {
+  <span class="kw">flex</span>: <span class="val">1</span>;
+  <span class="kw">border</span>: <span class="val">none</span>;
+  <span class="kw">outline</span>: <span class="val">none</span>;
+  <span class="kw">font-size</span>: <span class="val">13px</span>;
+  <span class="kw">background</span>: <span class="val">transparent</span>;
+}
+
+<span class="sel">.combo-list</span> { <span class="kw">max-height</span>: <span class="val">200px</span>; <span class="kw">overflow-y</span>: <span class="val">auto</span>; }
+
+<span class="sel">.combo-item</span> {
+  <span class="kw">padding</span>: <span class="val">9px 14px</span>;
+  <span class="kw">font-size</span>: <span class="val">13px</span>;
+  <span class="kw">cursor</span>: <span class="val">pointer</span>;
+  <span class="kw">transition</span>: <span class="val">background 0.1s</span>;
+}
+<span class="sel">.combo-item:hover</span> {
+  <span class="kw">background</span>: <span class="val">var(--primary-light)</span>;
+  <span class="kw">color</span>: <span class="val">var(--primary)</span>;
+}
+
+<span class="cmt">/* Responsivo: mobile usa modal */</span>
+<span class="sel">@media (min-width: 769px)</span> { <span class="sel">.combo-modal</span> { <span class="kw">display</span>: <span class="val">none !important</span>; } }
+<span class="sel">@media (max-width: 768px)</span> { <span class="sel">.combo-dropdown</span> { <span class="kw">display</span>: <span class="val">none !important</span>; } }</pre></div>
+        </div>
+
+        <!-- MODAL SEARCH -->
+        <div class="comp-section" id="sec-modal-search">
+            <div class="comp-title">Modal de Pesquisa</div>
+            <div class="comp-desc">Versão mobile/tablet do combobox pesquisável. Abre em fullscreen modal com campo de busca no topo e lista filtrada. Usado automaticamente pelo combo-search em telas &le; 768px.</div>
+            <div class="preview-box">
+                <div class="preview-label">Mobile — Modal pesquisável (simulação)</div>
+                <div style="position:relative;background:var(--background);border-radius:var(--radius-md);padding:16px;max-width:360px;margin:0 auto;">
+                    <div style="background:var(--surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);overflow:hidden;">
+                        <div class="modal-header">
+                            <h3>Tipo de Atendimento</h3>
+                            <button class="modal-close"><span class="material-symbols-outlined">close</span></button>
+                        </div>
+                        <div style="padding:16px;">
+                            <div class="modal-search-wrap">
+                                <span class="material-symbols-outlined">search</span>
+                                <input class="modal-search-input" placeholder="Buscar tipo de atendimento..." oninput="filterDemoModal(this.value)">
+                            </div>
+                            <div id="demo-modal-list">
+                                <div class="combo-modal-item"><div class="combo-modal-item-name">Assistência de enfermagem</div><div class="combo-modal-item-meta"><span>Não grave</span><span>SLA: 10 min</span></div></div>
+                                <div class="combo-modal-item"><div class="combo-modal-item-name">Código de Emergência</div><div class="combo-modal-item-meta"><span style="color:var(--emergency);">Emergência</span><span>SLA: 2 min</span></div></div>
+                                <div class="combo-modal-item"><div class="combo-modal-item-name">Intercorrência clínica</div><div class="combo-modal-item-meta"><span style="color:var(--urgent);">Urgência</span><span>SLA: 5 min</span></div></div>
+                                <div class="combo-modal-item"><div class="combo-modal-item-name">Queda de paciente</div><div class="combo-modal-item-meta"><span style="color:var(--emergency);">Emergência</span><span>SLA: 2 min</span></div></div>
+                                <div class="combo-modal-item"><div class="combo-modal-item-name">Solicitação de medicação</div><div class="combo-modal-item-meta"><span>Não grave</span><span>SLA: 10 min</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Modal de Pesquisa</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="cmt">/* Container da busca no topo do modal */</span>
+<span class="sel">.modal-search-wrap</span> {
+  <span class="kw">position</span>: <span class="val">relative</span>;
+  <span class="kw">margin-bottom</span>: <span class="val">16px</span>;
+}
+<span class="sel">.modal-search-wrap .material-symbols-outlined</span> {
+  <span class="kw">position</span>: <span class="val">absolute</span>;
+  <span class="kw">left</span>: <span class="val">12px</span>;
+  <span class="kw">top</span>: <span class="val">50%</span>;
+  <span class="kw">transform</span>: <span class="val">translateY(-50%)</span>;
+  <span class="kw">font-size</span>: <span class="val">18px</span>;
+  <span class="kw">color</span>: <span class="val">var(--text-secondary)</span>;
+}
+<span class="sel">.modal-search-input</span> {
+  <span class="kw">width</span>: <span class="val">100%</span>;
+  <span class="kw">padding</span>: <span class="val">12px 14px 12px 40px</span>;
+  <span class="kw">border</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="kw">border-radius</span>: <span class="val">var(--radius-sm)</span>;
+  <span class="kw">font-size</span>: <span class="val">14px</span>;
+}
+
+<span class="cmt">/* Itens da lista */</span>
+<span class="sel">.combo-modal-item</span> {
+  <span class="kw">padding</span>: <span class="val">12px 16px</span>;
+  <span class="kw">cursor</span>: <span class="val">pointer</span>;
+  <span class="kw">border-bottom</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="kw">transition</span>: <span class="val">background 0.1s</span>;
+}
+<span class="sel">.combo-modal-item:hover</span> {
+  <span class="kw">background</span>: <span class="val">var(--primary-light)</span>;
+}
+<span class="sel">.combo-modal-item-name</span> {
+  <span class="kw">font-size</span>: <span class="val">14px</span>;
+  <span class="kw">font-weight</span>: <span class="val">500</span>;
+  <span class="kw">margin-bottom</span>: <span class="val">2px</span>;
+}
+<span class="sel">.combo-modal-item-meta</span> {
+  <span class="kw">display</span>: <span class="val">flex</span>;
+  <span class="kw">gap</span>: <span class="val">8px</span>;
+  <span class="kw">font-size</span>: <span class="val">12px</span>;
+  <span class="kw">color</span>: <span class="val">var(--text-secondary)</span>;
+}
+
+<span class="cmt">/* Troca automática desktop/mobile */</span>
+<span class="sel">@media (max-width: 768px)</span> {
+  <span class="sel">.combo-dropdown</span> { <span class="kw">display</span>: <span class="val">none !important</span>; }
+  <span class="cmt">/* O combo-search abre o modal fullscreen */</span>
+}</pre></div>
+        </div>
+
+        <!-- ==================== WIDGETS — DATA DISPLAY ==================== -->
+
+        <!-- STATUS PILLS -->
+        <div class="comp-section" id="sec-status-pills">
+            <div class="comp-title">Status Pills</div>
+            <div class="comp-desc">Badges de status com dot colorido. Usados em tabelas, cards e headers para indicar urgência.</div>
+            <div class="preview-box">
+                <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                    <span class="status-pill status-emergency"><span class="dot"></span>Emergência</span>
+                    <span class="status-pill status-urgent"><span class="dot"></span>Urgência</span>
+                    <span class="status-pill status-moderate"><span class="dot"></span>Tolerável</span>
+                    <span class="status-pill status-routine"><span class="dot"></span>Finalizado</span>
+                    <span class="status-pill status-calling"><span class="dot"></span>Chamando...</span>
+                </div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Status Pills</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="sel">.status-pill</span> {
+  <span class="kw">display</span>: <span class="val">inline-flex</span>;
+  <span class="kw">align-items</span>: <span class="val">center</span>;
+  <span class="kw">gap</span>: <span class="val">6px</span>;
+  <span class="kw">padding</span>: <span class="val">4px 12px</span>;
+  <span class="kw">border-radius</span>: <span class="val">50px</span>;
+  <span class="kw">font-size</span>: <span class="val">12px</span>;
+  <span class="kw">font-weight</span>: <span class="val">600</span>;
+}
+<span class="sel">.status-pill .dot</span> {
+  <span class="kw">width</span>: <span class="val">7px</span>; <span class="kw">height</span>: <span class="val">7px</span>;
+  <span class="kw">border-radius</span>: <span class="val">50%</span>;
+}
+
+<span class="cmt">/* Variantes */</span>
+<span class="sel">.status-emergency</span> { <span class="kw">background</span>: <span class="val">var(--emergency-bg)</span>; <span class="kw">color</span>: <span class="val">var(--emergency)</span>; }
+<span class="sel">.status-urgent</span> { <span class="kw">background</span>: <span class="val">var(--urgent-bg)</span>; <span class="kw">color</span>: <span class="val">var(--urgent)</span>; }
+<span class="sel">.status-moderate</span> { <span class="kw">background</span>: <span class="val">var(--moderate-bg)</span>; <span class="kw">color</span>: <span class="val">var(--moderate)</span>; }
+<span class="sel">.status-routine</span> { <span class="kw">background</span>: <span class="val">var(--routine-bg)</span>; <span class="kw">color</span>: <span class="val">var(--routine)</span>; }
+<span class="sel">.status-calling</span> { <span class="kw">background</span>: <span class="val">var(--calling-bg)</span>; <span class="kw">color</span>: <span class="val">var(--calling)</span>; }</pre></div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="comp-section" id="sec-table">
+            <div class="comp-title">Tabela</div>
+            <div class="comp-desc">Tabela de dados com header sticky, hover em linhas e ações inline. Base para todos os CRUDs.</div>
+            <div class="preview-box">
+                <div style="overflow-x:auto;">
+                    <table class="table-preview">
+                        <thead><tr><th>Data/Hora</th><th>Paciente</th><th>Quarto</th><th>Status</th><th style="text-align:right;">Ações</th></tr></thead>
+                        <tbody>
+                            <tr><td>22/03 14:32</td><td>Eduardo Silva</td><td>101 — ALA A</td><td><span class="status-pill status-calling"><span class="dot"></span>Chamando</span></td><td style="text-align:right;"><div class="icon-btn-group" style="justify-content:flex-end;"><button class="icon-btn success" data-tooltip="Atender"><span class="material-symbols-outlined">call</span></button><button class="icon-btn" data-tooltip="Detalhes"><span class="material-symbols-outlined">info</span></button></div></td></tr>
+                            <tr><td>22/03 13:45</td><td>Maria Santos</td><td>205 — ALA A</td><td><span class="status-pill status-urgent"><span class="dot"></span>Urgência</span></td><td style="text-align:right;"><div class="icon-btn-group" style="justify-content:flex-end;"><button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn" data-tooltip="Detalhes"><span class="material-symbols-outlined">info</span></button></div></td></tr>
+                            <tr><td>22/03 12:10</td><td>João Pereira</td><td>103 — ALA A</td><td><span class="status-pill status-routine"><span class="dot"></span>Finalizado</span></td><td style="text-align:right;"><div class="icon-btn-group" style="justify-content:flex-end;"><button class="icon-btn" data-tooltip="Ver"><span class="material-symbols-outlined">visibility</span></button></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Tabela</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="sel">.table-container</span> { <span class="kw">overflow-x</span>: <span class="val">auto</span>; }
+
+<span class="sel">table</span> {
+  <span class="kw">width</span>: <span class="val">100%</span>;
+  <span class="kw">border-collapse</span>: <span class="val">separate</span>;
+  <span class="kw">border-spacing</span>: <span class="val">0</span>;
+}
+
+<span class="sel">th</span> {
+  <span class="kw">text-align</span>: <span class="val">left</span>;
+  <span class="kw">font-size</span>: <span class="val">12px</span>;
+  <span class="kw">font-weight</span>: <span class="val">600</span>;
+  <span class="kw">color</span>: <span class="val">var(--text-secondary)</span>;
+  <span class="kw">text-transform</span>: <span class="val">uppercase</span>;
+  <span class="kw">letter-spacing</span>: <span class="val">0.5px</span>;
+  <span class="kw">padding</span>: <span class="val">10px 16px</span>;
+  <span class="kw">border-bottom</span>: <span class="val">2px solid var(--border)</span>;
+}
+
+<span class="sel">td</span> {
+  <span class="kw">padding</span>: <span class="val">14px 16px</span>;
+  <span class="kw">border-bottom</span>: <span class="val">1px solid var(--border)</span>;
+}
+
+<span class="sel">tr:hover td</span> {
+  <span class="kw">background</span>: <span class="val">var(--primary-light)</span>;
+}</pre></div>
+        </div>
+
+        <!-- CARDS -->
+        <div class="comp-section" id="sec-cards">
+            <div class="comp-title">Cards de Chamada</div>
+            <div class="comp-desc">Cards usados nas telas de Triagem e Assistência. Variante "calling" com borda pulsante e glow.</div>
+            <div class="preview-box">
+                <div class="call-card calling">
+                    <div class="call-info"><h4>Eduardo Silva</h4><p>Quarto 101 — Leito 1 — ALA A — Troca de soro</p></div>
+                    <div class="call-meta"><span class="status-pill status-calling"><span class="dot"></span>Chamando...</span><span class="call-time">há 2 min</span></div>
+                </div>
+                <div class="call-card">
+                    <div class="call-info"><h4>Maria Santos</h4><p>Quarto 205 — Leito 3 — ALA A — Verificar sinais</p></div>
+                    <div class="call-meta"><span class="status-pill status-urgent"><span class="dot"></span>Urgência</span><span class="call-time">há 15 min</span></div>
+                </div>
+                <div class="call-card">
+                    <div class="call-info"><h4>João Pereira</h4><p>Quarto 103 — Leito 2 — ALA A — Medicação oral</p></div>
+                    <div class="call-meta"><span class="status-pill status-routine"><span class="dot"></span>Finalizado</span><span class="call-time">há 45 min</span></div>
+                </div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Cards</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="sel">.call-card</span> {
+  <span class="kw">background</span>: <span class="val">var(--surface)</span>;
+  <span class="kw">border</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="kw">border-radius</span>: <span class="val">var(--radius-md)</span>;
+  <span class="kw">padding</span>: <span class="val">20px</span>;
+  <span class="kw">display</span>: <span class="val">flex</span>;
+  <span class="kw">justify-content</span>: <span class="val">space-between</span>;
+  <span class="kw">align-items</span>: <span class="val">center</span>;
+  <span class="kw">cursor</span>: <span class="val">pointer</span>;
+  <span class="kw">transition</span>: <span class="val">box-shadow 0.2s, border-color 0.2s</span>;
+}
+<span class="sel">.call-card:hover</span> {
+  <span class="kw">box-shadow</span>: <span class="val">var(--shadow-md)</span>;
+  <span class="kw">border-color</span>: <span class="val">var(--primary)</span>;
+}
+
+<span class="sel">.call-card.calling</span> {
+  <span class="kw">border-left</span>: <span class="val">4px solid var(--calling)</span>;
+  <span class="kw">animation</span>: <span class="val">card-glow 2s infinite</span>;
+}
+
+<span class="sel">@keyframes card-glow</span> {
+  0%, 100% { <span class="kw">box-shadow</span>: <span class="val">var(--shadow-sm)</span>; }
+  50% { <span class="kw">box-shadow</span>: <span class="val">0 0 16px rgba(139,92,246,0.2)</span>; }
+}</pre></div>
+        </div>
+
+        <!-- ICON BUTTONS -->
+        <div class="comp-section" id="sec-icon-buttons">
+            <div class="comp-title">Icon Buttons + Tooltips</div>
+            <div class="comp-desc">Botões de ícone com tooltip via CSS (data-tooltip). Variantes: padrão, success (verde) e danger (vermelho).</div>
+            <div class="preview-box">
+                <div class="preview-label">Ações de linha (CRUD)</div>
+                <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:24px;">
+                    <div>
+                        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">Padrão</div>
+                        <div class="icon-btn-group">
+                            <button class="icon-btn" data-tooltip="Editar"><span class="material-symbols-outlined">edit</span></button>
+                            <button class="icon-btn" data-tooltip="Visualizar"><span class="material-symbols-outlined">visibility</span></button>
+                            <button class="icon-btn danger" data-tooltip="Excluir"><span class="material-symbols-outlined">delete</span></button>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">Triagem</div>
+                        <div class="icon-btn-group">
+                            <button class="icon-btn success" data-tooltip="Atender"><span class="material-symbols-outlined">call</span></button>
+                            <button class="icon-btn" data-tooltip="Detalhes"><span class="material-symbols-outlined">info</span></button>
+                            <button class="icon-btn danger" data-tooltip="Recusar"><span class="material-symbols-outlined">call_end</span></button>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">Enfermagem</div>
+                        <div class="icon-btn-group">
+                            <button class="icon-btn success" data-tooltip="Finalizar"><span class="material-symbols-outlined">check_circle</span></button>
+                            <button class="icon-btn" data-tooltip="Procedimento"><span class="material-symbols-outlined">add_circle</span></button>
+                            <button class="icon-btn" data-tooltip="Histórico"><span class="material-symbols-outlined">history</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="css-toggle" onclick="toggleCss(this)"><span class="material-symbols-outlined">code</span> CSS — Icon Buttons</button>
+            <div class="css-block"><button class="copy-btn" onclick="copyCode(this)"><span class="material-symbols-outlined">content_copy</span> Copiar</button><pre><span class="sel">.icon-btn</span> {
+  <span class="kw">display</span>: <span class="val">inline-flex</span>;
+  <span class="kw">align-items</span>: <span class="val">center</span>;
+  <span class="kw">justify-content</span>: <span class="val">center</span>;
+  <span class="kw">width</span>: <span class="val">36px</span>;
+  <span class="kw">height</span>: <span class="val">36px</span>;
+  <span class="kw">border</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="kw">border-radius</span>: <span class="val">var(--radius-sm)</span>;
+  <span class="kw">background</span>: <span class="val">var(--surface)</span>;
+  <span class="kw">color</span>: <span class="val">var(--text-secondary)</span>;
+  <span class="kw">cursor</span>: <span class="val">pointer</span>;
+  <span class="kw">transition</span>: <span class="val">all 0.15s</span>;
+  <span class="kw">position</span>: <span class="val">relative</span>;
+}
+<span class="sel">.icon-btn:hover</span> {
+  <span class="kw">background</span>: <span class="val">var(--primary-light)</span>;
+  <span class="kw">color</span>: <span class="val">var(--primary)</span>;
+  <span class="kw">border-color</span>: <span class="val">var(--primary)</span>;
+}
+<span class="sel">.icon-btn.danger:hover</span> {
+  <span class="kw">background</span>: <span class="val">var(--emergency-bg)</span>;
+  <span class="kw">color</span>: <span class="val">var(--emergency)</span>;
+}
+<span class="sel">.icon-btn.success:hover</span> {
+  <span class="kw">background</span>: <span class="val">var(--routine-bg)</span>;
+  <span class="kw">color</span>: <span class="val">var(--routine)</span>;
+}
+
+<span class="cmt">/* Tooltip via CSS */</span>
+<span class="sel">.icon-btn::after</span> {
+  <span class="kw">content</span>: <span class="val">attr(data-tooltip)</span>;
+  <span class="kw">position</span>: <span class="val">absolute</span>;
+  <span class="kw">bottom</span>: <span class="val">calc(100% + 6px)</span>;
+  <span class="kw">left</span>: <span class="val">50%</span>;
+  <span class="kw">transform</span>: <span class="val">translateX(-50%)</span>;
+  <span class="kw">background</span>: <span class="val">var(--text-primary)</span>;
+  <span class="kw">color</span>: <span class="val">var(--surface)</span>;
+  <span class="kw">font-size</span>: <span class="val">11px</span>;
+  <span class="kw">padding</span>: <span class="val">4px 10px</span>;
+  <span class="kw">border-radius</span>: <span class="val">4px</span>;
+  <span class="kw">white-space</span>: <span class="val">nowrap</span>;
+  <span class="kw">opacity</span>: <span class="val">0</span>;
+  <span class="kw">pointer-events</span>: <span class="val">none</span>;
+  <span class="kw">transition</span>: <span class="val">opacity 0.15s</span>;
+}
+<span class="sel">.icon-btn:hover::after</span> { <span class="kw">opacity</span>: <span class="val">1</span>; }</pre></div>
+        </div>
+
+    </div><!-- end page-content -->
+</div><!-- end main-content -->
+
+<script>
+    // Theme
+    (function() {
+        var saved = localStorage.getItem('ncall_theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+        updateThemeUI();
+    })();
+
+    function toggleTheme() {
+        var html = document.documentElement;
+        var isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? '' : 'dark');
+        localStorage.setItem('ncall_theme', isDark ? '' : 'dark');
+        updateThemeUI();
+    }
+    function updateThemeUI() {
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var icon = document.getElementById('theme-icon');
+        var label = document.getElementById('theme-label');
+        if (icon) icon.textContent = isDark ? 'light_mode' : 'dark_mode';
+        if (label) label.textContent = isDark ? 'Light' : 'Dark';
+    }
+
+    // Tree navigation
+    function toggleCategory(el) {
+        el.classList.toggle('collapsed');
+    }
+
+    function showComp(id, el) {
+        // Remove active from all tree items
+        document.querySelectorAll('.tree-item').forEach(function(item) {
+            item.classList.remove('active');
+        });
+        if (el) el.classList.add('active');
+
+        // Hide all sections, show target
+        document.querySelectorAll('.comp-section').forEach(function(sec) {
+            sec.classList.remove('active');
+        });
+        var target = document.getElementById('sec-' + id);
+        if (target) target.classList.add('active');
+
+        // Update header title
+        var title = target ? target.querySelector('.comp-title') : null;
+        if (title) document.getElementById('header-title').textContent = title.textContent;
+
+        // Close mobile sidebar
+        document.getElementById('tree-sidebar').classList.remove('open');
+    }
+
+    // CSS toggle
+    function toggleCss(btn) {
+        var block = btn.nextElementSibling;
+        block.classList.toggle('open');
+        var icon = btn.querySelector('.material-symbols-outlined');
+        icon.textContent = block.classList.contains('open') ? 'code_off' : 'code';
+    }
+
+    // Copy code
+    function copyCode(btn) {
+        var pre = btn.parentElement.querySelector('pre');
+        var text = pre.textContent || pre.innerText;
+        navigator.clipboard.writeText(text).then(function() {
+            btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;">check</span> Copiado!';
+            setTimeout(function() {
+                btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;">content_copy</span> Copiar';
+            }, 2000);
+        });
+    }
+
+    // Demo combobox interaction
+    function toggleDemoCombo() {
+        var trigger = document.querySelector('#demo-combo .combo-trigger');
+        var dropdown = document.getElementById('demo-dropdown');
+        trigger.classList.toggle('open');
+        dropdown.classList.toggle('open');
+    }
+
+    function selectDemoCombo(el) {
+        var trigger = document.querySelector('#demo-combo .combo-trigger');
+        var valueEl = trigger.querySelector('.combo-value');
+        valueEl.textContent = el.textContent;
+        valueEl.classList.remove('placeholder');
+        document.querySelectorAll('#demo-combo-list .combo-item').forEach(function(item) {
+            item.classList.remove('selected');
+        });
+        el.classList.add('selected');
+        trigger.classList.remove('open');
+        document.getElementById('demo-dropdown').classList.remove('open');
+    }
+
+    function filterDemoCombo(val) {
+        var items = document.querySelectorAll('#demo-combo-list .combo-item');
+        var empty = document.querySelector('#demo-combo-list .combo-empty');
+        var count = 0;
+        items.forEach(function(item) {
+            var match = item.textContent.toLowerCase().indexOf(val.toLowerCase()) >= 0;
+            item.style.display = match ? '' : 'none';
+            if (match) count++;
+        });
+        if (empty) empty.style.display = count === 0 ? '' : 'none';
+    }
+
+    function filterDemoModal(val) {
+        var items = document.querySelectorAll('#demo-modal-list .combo-modal-item');
+        items.forEach(function(item) {
+            var name = item.querySelector('.combo-modal-item-name').textContent;
+            item.style.display = name.toLowerCase().indexOf(val.toLowerCase()) >= 0 ? '' : 'none';
+        });
+    }
+</script>
+
+</body>
+</html>
