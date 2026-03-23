@@ -435,6 +435,51 @@ body {
     margin-top: 2px;
 }
 
+.page-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pwa-assistant {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    padding: 16px 18px;
+    border: 1px solid rgba(27, 110, 194, 0.18);
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--surface), var(--primary-light));
+    box-shadow: var(--shadow-sm);
+}
+
+.pwa-assistant-copy {
+    min-width: 0;
+}
+
+.pwa-assistant-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.pwa-assistant-copy p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    max-width: 760px;
+}
+
+.pwa-assistant-status {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 /* Page routing */
 .page {
     display: none;
@@ -867,6 +912,17 @@ body {
     border-color: var(--primary);
 }
 
+.assist-card.call-highlight {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(27, 110, 194, 0.14), var(--shadow-md);
+    animation: incoming-call-pulse 1.4s ease-in-out 3;
+}
+
+@keyframes incoming-call-pulse {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+}
+
 .assist-card .priority-bar {
     width: 4px;
     height: 44px;
@@ -1230,6 +1286,112 @@ tr:last-child td {
     display: flex;
     gap: 10px;
     justify-content: flex-end;
+}
+
+.pwa-install-hero {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    border-radius: var(--radius-md);
+    background: var(--primary-light);
+}
+
+.pwa-install-hero-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.pwa-install-hero-icon .material-symbols-outlined {
+    font-size: 22px;
+}
+
+.pwa-install-hero h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.pwa-install-hero p {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.pwa-install-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.pwa-install-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+}
+
+.pwa-install-tip .material-symbols-outlined {
+    font-size: 20px;
+    color: var(--primary);
+    margin-top: 1px;
+}
+
+.pwa-install-tip strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.pwa-install-tip span {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.pwa-install-ios-help {
+    display: none;
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    background: var(--background);
+}
+
+.pwa-install-ios-help.visible {
+    display: block;
+}
+
+.pwa-install-ios-help strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.pwa-install-ios-help ol {
+    padding-left: 18px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.pwa-install-ios-help li + li {
+    margin-top: 6px;
+}
+
+.pwa-install-note {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--text-secondary);
 }
 
 .modal-close {
@@ -2240,6 +2402,19 @@ body.kiosk-mode .kiosk-header {
 
 /* ---------- Tablet (max-width: 1024px) ---------- */
 @media (max-width: 1024px) {
+    .page-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .pwa-assistant {
+        flex-direction: column;
+    }
+
+    .pwa-assistant-status {
+        justify-content: flex-start;
+    }
+
     /* Sidebar collapsed */
     .sidebar {
         width: var(--sidebar-collapsed);
@@ -2430,6 +2605,23 @@ body.kiosk-mode .kiosk-header {
 
 /* ---------- Mobile (max-width: 768px) ---------- */
 @media (max-width: 768px) {
+    .page-actions {
+        width: 100%;
+    }
+
+    .page-actions .btn {
+        flex: 1 1 100%;
+        justify-content: center;
+    }
+
+    .pwa-assistant {
+        padding: 14px;
+    }
+
+    .pwa-install-grid {
+        grid-template-columns: 1fr;
+    }
+
     /* Sidebar as drawer */
     .sidebar {
         transform: translateX(-100%);

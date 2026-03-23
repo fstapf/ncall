@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>n.Call - Prototype</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="theme-color" content="#1B6EC2">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
@@ -140,9 +146,34 @@
                         <h1 class="page-title">Triagem</h1>
                         <p class="page-subtitle">Chamadas aguardando atendimento</p>
                     </div>
+                    <div class="page-actions">
+                        <button class="btn btn-secondary" id="btn-install-app" onclick="openInstallModal()" hidden>
+                            <span class="material-symbols-outlined">download</span>
+                            Instalar app
+                        </button>
+                        <button class="btn btn-ghost" id="btn-enable-notifications" onclick="requestCallNotifications()">
+                            <span class="material-symbols-outlined">notifications</span>
+                            Ativar alertas
+                        </button>
+                        <button class="btn btn-primary" id="btn-simulate-call" onclick="simulateIncomingCall('manual')">
+                            <span class="material-symbols-outlined">add_call</span>
+                            Simular chamada
+                        </button>
+                    </div>
                 </div>
 
-                <div class="card-list">
+                <div class="pwa-assistant" id="pwa-assistant">
+                    <div class="pwa-assistant-copy">
+                        <div class="pwa-assistant-title">Fluxo PWA para GitHub Pages</div>
+                        <p id="pwa-assistant-text">Abra este prototipo pela URL do GitHub Pages. Depois do login, o app pode pedir instalacao, habilitar notificacoes e simular uma nova chamada com som no app, notificacao nativa e vibracao quando houver suporte.</p>
+                    </div>
+                    <div class="pwa-assistant-status">
+                        <span class="status-pill status-moderate" id="pwa-install-status"><span class="dot"></span>Instalacao pendente</span>
+                        <span class="status-pill status-urgent" id="pwa-notification-status"><span class="dot"></span>Alertas inativos</span>
+                    </div>
+                </div>
+
+                <div class="card-list" id="triage-call-list">
                     <div class="assist-card" onclick="openTriageCall('Maria Santos', 'Q.205 · L.3 · ALA A')">
                         <div class="card-body">
                             <h4>Maria Santos</h4>
@@ -1223,11 +1254,88 @@
         </div>
     </div>
 
+    <div class="modal-backdrop" id="install-modal" onclick="if (event.target === this) closeInstallModal(true)">
+        <div class="modal" style="max-width:540px;">
+            <div class="modal-header">
+                <h3 id="install-modal-title">Instalar n.Call no dispositivo</h3>
+                <button class="modal-close" onclick="closeInstallModal(true)">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="pwa-install-hero">
+                    <div class="pwa-install-hero-icon">
+                        <span class="material-symbols-outlined">install_mobile</span>
+                    </div>
+                    <div>
+                        <h4>Atalho em modo app para o time de enfermagem</h4>
+                        <p id="install-modal-copy">No Android e em desktop Chromium, o navegador pode abrir o prompt nativo de instalacao. No iPhone e iPad, a instalacao continua manual pelo menu Compartilhar.</p>
+                    </div>
+                </div>
+
+                <div class="pwa-install-grid">
+                    <div class="pwa-install-tip">
+                        <span class="material-symbols-outlined">download</span>
+                        <div>
+                            <strong>Instalacao</strong>
+                            <span>Use a URL publicada do GitHub Pages para que o navegador reconheca o prototipo como PWA.</span>
+                        </div>
+                    </div>
+                    <div class="pwa-install-tip">
+                        <span class="material-symbols-outlined">notifications_active</span>
+                        <div>
+                            <strong>Notificacoes</strong>
+                            <span>Depois da instalacao, libere os alertas para receber banners nativos de nova chamada.</span>
+                        </div>
+                    </div>
+                    <div class="pwa-install-tip">
+                        <span class="material-symbols-outlined">volume_up</span>
+                        <div>
+                            <strong>Som no app</strong>
+                            <span>O prototipo toca um alerta sintetizado quando a simulacao acontece com o app aberto.</span>
+                        </div>
+                    </div>
+                    <div class="pwa-install-tip">
+                        <span class="material-symbols-outlined">vibration</span>
+                        <div>
+                            <strong>Vibracao</strong>
+                            <span>O app chama a API de vibracao. Android costuma suportar; iOS Safari nao expoe essa API.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pwa-install-ios-help" id="install-ios-help">
+                    <strong>Como instalar no iPhone ou iPad</strong>
+                    <ol>
+                        <li>Abra a pagina pelo Safari.</li>
+                        <li>Toque em Compartilhar.</li>
+                        <li>Escolha "Adicionar a Tela de Inicio".</li>
+                    </ol>
+                </div>
+
+                <p class="pwa-install-note">Limite do prototipo: som customizado so e garantido com o app aberto. Com o app fechado, a exibicao real de notificacoes depende de Push API e de um backend, por exemplo via FCM.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeInstallModal(true)">Agora nao</button>
+                <button class="btn btn-primary" id="install-modal-action" data-action="install" onclick="handleInstallModalAction()">Instalar agora</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== TOAST ==================== -->
     <div id="toast">
         <span class="material-symbols-outlined">check_circle</span>
         <span id="toast-msg">Ação realizada com sucesso</span>
     </div>
+
+    <script>
+        (function restorePersistentAuth() {
+            if (localStorage.getItem('ncall_auth_persist') === 'true' && sessionStorage.getItem('ncall_auth') !== 'true') {
+                sessionStorage.setItem('ncall_auth', 'true');
+                sessionStorage.setItem('ncall_user', localStorage.getItem('ncall_user') || 'Enfermeira');
+            }
+        })();
+    </script>
 
     <!-- ==================== JAVASCRIPT ==================== -->
     <script>
@@ -1749,5 +1857,681 @@
         }
     </script>
 
+    <script>
+        (function initNcallPwaLayer() {
+            var state = {
+                deferredInstallPrompt: null,
+                activeTriageCard: null,
+                activeTriageCallId: '',
+                pendingFocusCallId: '',
+                alertAudioContext: null,
+                demoCallCursor: 0,
+                demoToastTimer: null,
+                demoCalls: [
+                    { name: 'Patricia Lima', room: 'Q.412 - L.1 - ALA C', roomLabel: 'Q.412' },
+                    { name: 'Roberto Alves', room: 'Q.118 - L.2 - ALA A', roomLabel: 'Q.118' },
+                    { name: 'Helena Costa', room: 'Q.302 - L.1 - ALA B', roomLabel: 'Q.302' },
+                    { name: 'Lucas Vieira', room: 'Q.207 - L.3 - ALA A', roomLabel: 'Q.207' }
+                ]
+            };
+
+            function isStandalone() {
+                return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            }
+
+            function isIosSafariInstallFlow() {
+                return /iphone|ipad|ipod/i.test(navigator.userAgent) && !isStandalone();
+            }
+
+            function canUsePwaFeatures() {
+                return window.isSecureContext || location.hostname === 'localhost';
+            }
+
+            function hasNotificationSupport() {
+                return 'Notification' in window;
+            }
+
+            function syncLoggedUser() {
+                var user = sessionStorage.getItem('ncall_user') || localStorage.getItem('ncall_user') || 'Enfermeira';
+                var initials = user.split(' ').map(function(part) { return part.charAt(0); }).join('').substring(0, 2).toUpperCase();
+
+                document.querySelectorAll('.user-name').forEach(function(el) {
+                    el.textContent = 'Enfermeira';
+                });
+
+                document.querySelectorAll('.user-role').forEach(function(el) {
+                    el.textContent = user;
+                });
+
+                document.querySelectorAll('.user-avatar, .header-avatar, .self-avatar').forEach(function(el) {
+                    el.textContent = initials || 'NC';
+                });
+            }
+
+            function updateThemeColor() {
+                var meta = document.querySelector('meta[name="theme-color"]');
+                var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                if (meta) {
+                    meta.setAttribute('content', isDark ? '#14141F' : '#1B6EC2');
+                }
+            }
+
+            function setButtonContent(button, icon, label) {
+                if (!button) {
+                    return;
+                }
+                button.innerHTML = '<span class="material-symbols-outlined">' + icon + '</span>' + label;
+            }
+
+            function setStatusPill(el, statusClass, label) {
+                if (!el) {
+                    return;
+                }
+                el.className = 'status-pill ' + statusClass;
+                el.innerHTML = '<span class="dot"></span>' + label;
+            }
+
+            function syncTriageBadge() {
+                var badge = document.getElementById('nav-badge-triagem');
+                if (!badge) {
+                    return;
+                }
+                badge.textContent = document.querySelectorAll('#triage-call-list .assist-card').length;
+            }
+
+            function updatePwaUi() {
+                var installBtn = document.getElementById('btn-install-app');
+                var notifyBtn = document.getElementById('btn-enable-notifications');
+                var installStatus = document.getElementById('pwa-install-status');
+                var notificationStatus = document.getElementById('pwa-notification-status');
+                var assistantText = document.getElementById('pwa-assistant-text');
+                var installed = isStandalone();
+                var permission = hasNotificationSupport() ? Notification.permission : 'unsupported';
+
+                if (installed) {
+                    setStatusPill(installStatus, 'status-routine', 'PWA instalado');
+                    if (installBtn) {
+                        installBtn.hidden = true;
+                    }
+                } else if (!canUsePwaFeatures()) {
+                    setStatusPill(installStatus, 'status-emergency', 'Abrir em HTTPS');
+                    setButtonContent(installBtn, 'public', 'Abrir no GitHub Pages');
+                    if (installBtn) {
+                        installBtn.hidden = false;
+                    }
+                } else if (state.deferredInstallPrompt || isIosSafariInstallFlow()) {
+                    setStatusPill(installStatus, 'status-moderate', 'Pronto para instalar');
+                    setButtonContent(installBtn, state.deferredInstallPrompt ? 'download' : 'info', state.deferredInstallPrompt ? 'Instalar app' : 'Como instalar');
+                    if (installBtn) {
+                        installBtn.hidden = false;
+                    }
+                } else {
+                    setStatusPill(installStatus, 'status-moderate', 'Instalacao em preparacao');
+                    setButtonContent(installBtn, 'download', 'Instalar app');
+                    if (installBtn) {
+                        installBtn.hidden = false;
+                    }
+                }
+
+                if (permission === 'granted') {
+                    setStatusPill(notificationStatus, 'status-routine', 'Alertas ativos');
+                    setButtonContent(notifyBtn, 'notifications_active', 'Alertas ativos');
+                } else if (permission === 'denied') {
+                    setStatusPill(notificationStatus, 'status-emergency', 'Alertas bloqueados');
+                    setButtonContent(notifyBtn, 'notifications_off', 'Alertas bloqueados');
+                } else if (permission === 'unsupported') {
+                    setStatusPill(notificationStatus, 'status-emergency', 'Sem notificacoes web');
+                    setButtonContent(notifyBtn, 'notifications_off', 'Sem notificacoes');
+                } else {
+                    setStatusPill(notificationStatus, 'status-urgent', 'Alertas inativos');
+                    setButtonContent(notifyBtn, 'notifications', 'Ativar alertas');
+                }
+
+                if (assistantText) {
+                    if (!canUsePwaFeatures()) {
+                        assistantText.textContent = 'Para testar instalacao, notificacoes e service worker, abra este prototipo pela URL HTTPS do GitHub Pages.';
+                    } else if (installed && permission === 'granted') {
+                        assistantText.textContent = 'O app esta instalado e pronto para simular uma nova chamada com banner nativo, som no app aberto e vibracao quando o dispositivo permitir.';
+                    } else if (installed) {
+                        assistantText.textContent = 'O app ja esta instalado. Ative os alertas e depois use "Simular chamada" para validar o fluxo.';
+                    } else if (isIosSafariInstallFlow()) {
+                        assistantText.textContent = 'No iPhone e iPad, a instalacao continua manual pelo Safari: Compartilhar > Adicionar a Tela de Inicio.';
+                    } else if (state.deferredInstallPrompt) {
+                        assistantText.textContent = 'O navegador ja liberou o prompt nativo de instalacao. Instale o app e ative os alertas para ver o fluxo completo.';
+                    } else {
+                        assistantText.textContent = 'O prototipo esta preparado para GitHub Pages. Assim que o navegador liberar o prompt, instale o app e ative os alertas.';
+                    }
+                }
+
+                if (document.getElementById('install-modal').classList.contains('open')) {
+                    configureInstallModal();
+                }
+            }
+
+            function configureInstallModal() {
+                var title = document.getElementById('install-modal-title');
+                var copy = document.getElementById('install-modal-copy');
+                var action = document.getElementById('install-modal-action');
+                var iosHelp = document.getElementById('install-ios-help');
+                var notificationPermission = hasNotificationSupport() ? Notification.permission : 'unsupported';
+                iosHelp.classList.remove('visible');
+
+                if (isStandalone()) {
+                    title.textContent = 'n.Call instalado';
+                    copy.textContent = notificationPermission === 'granted'
+                        ? 'O app ja esta instalado e com alertas ativos. Toque abaixo para disparar a simulacao de nova chamada.'
+                        : 'O app ja esta instalado. Ative as notificacoes para receber o banner nativo da chamada simulada.';
+                    action.dataset.action = notificationPermission === 'granted' ? 'simulate' : 'notifications';
+                    action.textContent = notificationPermission === 'granted' ? 'Simular chamada' : 'Ativar alertas';
+                    return;
+                }
+
+                if (state.deferredInstallPrompt) {
+                    title.textContent = 'Instalar n.Call no dispositivo';
+                    copy.textContent = 'O navegador ja liberou o prompt nativo. Toque em "Instalar agora" para adicionar o prototipo como app.';
+                    action.dataset.action = 'install';
+                    action.textContent = 'Instalar agora';
+                    return;
+                }
+
+                if (isIosSafariInstallFlow()) {
+                    title.textContent = 'Instalacao manual no iPhone ou iPad';
+                    copy.textContent = 'O Safari nao expõe o evento beforeinstallprompt. A instalacao continua manual pelo menu Compartilhar.';
+                    iosHelp.classList.add('visible');
+                    action.dataset.action = 'close';
+                    action.textContent = 'Entendi';
+                    return;
+                }
+
+                if (!canUsePwaFeatures()) {
+                    title.textContent = 'Abrir em HTTPS';
+                    copy.textContent = 'Service Worker, instalacao e notificacoes exigem HTTPS ou localhost. Publique este repositorio no GitHub Pages para testar o fluxo real.';
+                    action.dataset.action = 'close';
+                    action.textContent = 'Fechar';
+                    return;
+                }
+
+                title.textContent = 'Instalacao guiada';
+                copy.textContent = 'Se o prompt ainda nao apareceu, aguarde o navegador concluir os criterios de instalacao ou use o menu do navegador.';
+                action.dataset.action = 'close';
+                action.textContent = 'Fechar';
+            }
+
+            function openInstallModal() {
+                configureInstallModal();
+                document.getElementById('install-modal').classList.add('open');
+            }
+
+            function closeInstallModal(rememberChoice) {
+                document.getElementById('install-modal').classList.remove('open');
+                sessionStorage.removeItem('ncall_prompt_install');
+                if (rememberChoice) {
+                    localStorage.setItem('ncall_install_prompt_dismissed', 'true');
+                }
+            }
+
+            async function promptInstall() {
+                if (!state.deferredInstallPrompt) {
+                    openInstallModal();
+                    return;
+                }
+
+                unlockAlertAudio();
+
+                var installEvent = state.deferredInstallPrompt;
+                state.deferredInstallPrompt = null;
+                updatePwaUi();
+
+                try {
+                    var result = await installEvent.prompt();
+                    if (result && result.outcome === 'accepted') {
+                        closeInstallModal(false);
+                        showToast('Solicitacao de instalacao enviada ao navegador');
+                    } else {
+                        state.deferredInstallPrompt = installEvent;
+                        updatePwaUi();
+                        showToast('Instalacao cancelada');
+                    }
+                } catch (error) {
+                    state.deferredInstallPrompt = installEvent;
+                    updatePwaUi();
+                    showToast('Nao foi possivel abrir o prompt de instalacao');
+                }
+            }
+
+            function handleInstallModalAction() {
+                var action = document.getElementById('install-modal-action').dataset.action;
+
+                if (action === 'install') {
+                    promptInstall();
+                    return;
+                }
+
+                if (action === 'notifications') {
+                    requestCallNotifications();
+                    return;
+                }
+
+                if (action === 'simulate') {
+                    closeInstallModal(false);
+                    simulateIncomingCall('install-modal');
+                    return;
+                }
+
+                closeInstallModal(false);
+            }
+
+            async function requestCallNotifications() {
+                unlockAlertAudio();
+
+                if (!hasNotificationSupport()) {
+                    showToast('Este navegador nao suporta notificacoes web');
+                    updatePwaUi();
+                    return;
+                }
+
+                if (Notification.permission === 'granted') {
+                    showToast('Notificacoes ja estao ativas');
+                    updatePwaUi();
+                    maybeRunStandaloneDemo();
+                    return;
+                }
+
+                if (Notification.permission === 'denied') {
+                    showToast('Libere as notificacoes nas configuracoes do navegador');
+                    updatePwaUi();
+                    return;
+                }
+
+                try {
+                    var permission = await Notification.requestPermission();
+                    updatePwaUi();
+                    if (permission === 'granted') {
+                        showToast('Alertas ativados para novas chamadas');
+                        maybeRunStandaloneDemo();
+                    } else {
+                        showToast('Permissao de notificacao nao concedida');
+                    }
+                } catch (error) {
+                    showToast('Nao foi possivel solicitar notificacoes');
+                }
+            }
+
+            function buildDemoCall() {
+                var base = state.demoCalls[state.demoCallCursor % state.demoCalls.length];
+                state.demoCallCursor += 1;
+                return {
+                    id: 'demo-call-' + Date.now() + '-' + state.demoCallCursor,
+                    name: base.name,
+                    room: base.room,
+                    roomLabel: base.roomLabel,
+                    createdAt: Date.now()
+                };
+            }
+
+            function readPersistedDemoCalls() {
+                try {
+                    var raw = localStorage.getItem('ncall_demo_calls');
+                    return raw ? JSON.parse(raw) : [];
+                } catch (error) {
+                    return [];
+                }
+            }
+
+            function writePersistedDemoCalls(calls) {
+                localStorage.setItem('ncall_demo_calls', JSON.stringify(calls.slice(0, 8)));
+            }
+
+            function persistDemoCall(call) {
+                var stored = readPersistedDemoCalls().filter(function(entry) {
+                    return entry.id !== call.id;
+                });
+                stored.unshift(call);
+                writePersistedDemoCalls(stored);
+            }
+
+            function removePersistedDemoCall(callId) {
+                if (!callId) {
+                    return;
+                }
+                writePersistedDemoCalls(readPersistedDemoCalls().filter(function(entry) {
+                    return entry.id !== callId;
+                }));
+            }
+
+            function addIncomingCallCard(call, shouldPersist) {
+                var list = document.getElementById('triage-call-list');
+                if (document.querySelector('[data-call-id="' + call.id + '"]')) {
+                    return;
+                }
+                var card = document.createElement('div');
+                card.className = 'assist-card call-highlight';
+                card.setAttribute('data-call-id', call.id);
+                card.innerHTML =
+                    '<div class="card-body">' +
+                        '<h4>' + call.name + '</h4>' +
+                        '<div class="card-details">' +
+                            '<span><span class="material-symbols-outlined">bed</span> ' + call.room + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="card-right">' +
+                        '<span class="status-pill status-active"><span class="dot"></span>Chamando...</span>' +
+                        '<span class="card-time">agora</span>' +
+                    '</div>';
+
+                card.addEventListener('click', function() {
+                    openTriageCall(call.name, call.room, card);
+                });
+
+                list.insertBefore(card, list.firstChild);
+
+                if (shouldPersist !== false) {
+                    persistDemoCall(call);
+                }
+            }
+
+            function hydratePersistedDemoCalls() {
+                readPersistedDemoCalls().slice().reverse().forEach(function(call) {
+                    addIncomingCallCard(call, false);
+                });
+            }
+
+            function focusTriageCall(callId) {
+                var card = document.querySelector('[data-call-id="' + callId + '"]');
+                if (!card) {
+                    state.pendingFocusCallId = callId;
+                    return;
+                }
+
+                state.pendingFocusCallId = '';
+                card.classList.add('call-highlight');
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                window.setTimeout(function() {
+                    card.classList.remove('call-highlight');
+                }, 3400);
+            }
+
+            function unlockAlertAudio() {
+                var Context = window.AudioContext || window.webkitAudioContext;
+                if (!Context) {
+                    return;
+                }
+                if (!state.alertAudioContext) {
+                    state.alertAudioContext = new Context();
+                }
+                if (state.alertAudioContext.state === 'suspended') {
+                    state.alertAudioContext.resume().catch(function() {});
+                }
+            }
+
+            function playTone(frequency, duration) {
+                if (!state.alertAudioContext) {
+                    return;
+                }
+
+                var oscillator = state.alertAudioContext.createOscillator();
+                var gain = state.alertAudioContext.createGain();
+                var now = state.alertAudioContext.currentTime;
+
+                oscillator.type = 'sine';
+                oscillator.frequency.value = frequency;
+                gain.gain.setValueAtTime(0.0001, now);
+                gain.gain.exponentialRampToValueAtTime(0.14, now + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+                oscillator.connect(gain);
+                gain.connect(state.alertAudioContext.destination);
+                oscillator.start(now);
+                oscillator.stop(now + duration + 0.03);
+            }
+
+            function playIncomingCallSound() {
+                var Context = window.AudioContext || window.webkitAudioContext;
+                if (!Context) {
+                    return;
+                }
+
+                if (!state.alertAudioContext) {
+                    state.alertAudioContext = new Context();
+                }
+
+                state.alertAudioContext.resume().then(function() {
+                    [
+                        { delay: 0, freq: 880, duration: 0.16 },
+                        { delay: 230, freq: 880, duration: 0.16 },
+                        { delay: 460, freq: 660, duration: 0.28 }
+                    ].forEach(function(step) {
+                        window.setTimeout(function() {
+                            playTone(step.freq, step.duration);
+                        }, step.delay);
+                    });
+                }).catch(function() {});
+            }
+
+            function triggerDeviceVibration() {
+                if ('vibrate' in navigator) {
+                    navigator.vibrate([200, 100, 200, 100, 420]);
+                }
+            }
+
+            async function showIncomingCallNotification(call) {
+                if (!hasNotificationSupport() || Notification.permission !== 'granted') {
+                    return;
+                }
+
+                var options = {
+                    body: call.name + ' esta chamando em ' + call.room,
+                    icon: './icons/icon-192.png',
+                    badge: './icons/badge-72.png',
+                    vibrate: [200, 100, 200, 100, 420],
+                    tag: 'ncall-' + call.id,
+                    renotify: true,
+                    requireInteraction: true,
+                    data: {
+                        url: './app.html?page=triagem&callId=' + encodeURIComponent(call.id),
+                        callId: call.id
+                    }
+                };
+
+                try {
+                    if ('serviceWorker' in navigator && canUsePwaFeatures()) {
+                        var registration = await navigator.serviceWorker.ready;
+                        await registration.showNotification('Nova chamada - ' + call.roomLabel, options);
+                        return;
+                    }
+
+                    new Notification('Nova chamada - ' + call.roomLabel, options);
+                } catch (error) {
+                    // Sem acao no prototipo quando o navegador restringe a exibicao.
+                }
+            }
+
+            function simulateIncomingCall() {
+                var call = buildDemoCall();
+                addIncomingCallCard(call);
+                syncTriageBadge();
+                showPage('triagem', document.querySelector('.nav-item[onclick*="triagem"]'));
+                focusTriageCall(call.id);
+                triggerDeviceVibration();
+                playIncomingCallSound();
+                showIncomingCallNotification(call);
+                showToast('Nova chamada recebida de ' + call.name);
+            }
+
+            function maybeRunStandaloneDemo() {
+                if (!isStandalone() || !hasNotificationSupport() || Notification.permission !== 'granted') {
+                    return;
+                }
+                if (sessionStorage.getItem('ncall_demo_call_sent') === 'true') {
+                    return;
+                }
+                sessionStorage.setItem('ncall_demo_call_sent', 'true');
+                window.setTimeout(simulateIncomingCall, 1100);
+            }
+
+            function handleLaunchContext() {
+                var params = new URLSearchParams(window.location.search);
+                var page = params.get('page');
+                var callId = params.get('callId');
+
+                if (page && typeof showPage === 'function') {
+                    showPage(page, document.querySelector('.nav-item[onclick*="' + page + '"]'));
+                }
+
+                if (callId) {
+                    state.pendingFocusCallId = callId;
+                    window.setTimeout(function() {
+                        focusTriageCall(callId);
+                    }, 200);
+                }
+
+                if (window.location.search) {
+                    history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
+
+            function bindServiceWorkerMessages() {
+                if (!('serviceWorker' in navigator)) {
+                    return;
+                }
+
+                navigator.serviceWorker.addEventListener('message', function(event) {
+                    var data = event.data || {};
+                    if (data.type !== 'ncall-notification-click') {
+                        return;
+                    }
+
+                    showPage('triagem', document.querySelector('.nav-item[onclick*="triagem"]'));
+                    if (data.callId) {
+                        focusTriageCall(data.callId);
+                    }
+                });
+            }
+
+            function registerPwaShell() {
+                if (!('serviceWorker' in navigator) || !canUsePwaFeatures()) {
+                    updatePwaUi();
+                    return;
+                }
+
+                navigator.serviceWorker.register('./sw.js').then(function() {
+                    updatePwaUi();
+                }).catch(function() {
+                    updatePwaUi();
+                });
+            }
+
+            function maybeOpenInstallAfterLogin() {
+                if (sessionStorage.getItem('ncall_prompt_install') === 'true' && !isStandalone()) {
+                    window.setTimeout(openInstallModal, 420);
+                }
+            }
+
+            function updateUserThemeState() {
+                updateThemeColor();
+                updatePwaUi();
+            }
+
+            window.addEventListener('beforeinstallprompt', function(event) {
+                event.preventDefault();
+                state.deferredInstallPrompt = event;
+                updatePwaUi();
+                if (sessionStorage.getItem('ncall_prompt_install') === 'true') {
+                    window.setTimeout(openInstallModal, 280);
+                }
+            });
+
+            window.addEventListener('appinstalled', function() {
+                localStorage.setItem('ncall_pwa_installed', 'true');
+                closeInstallModal(false);
+                updatePwaUi();
+                showToast('n.Call instalado no dispositivo');
+                maybeRunStandaloneDemo();
+            });
+
+            var originalToggleTheme = window.toggleTheme;
+            window.toggleTheme = function(event) {
+                if (typeof originalToggleTheme === 'function') {
+                    originalToggleTheme(event);
+                }
+                updateUserThemeState();
+            };
+
+            var originalLogout = window.logout;
+            window.logout = function() {
+                localStorage.removeItem('ncall_auth_persist');
+                localStorage.removeItem('ncall_user');
+                sessionStorage.removeItem('ncall_prompt_install');
+                if (typeof originalLogout === 'function') {
+                    originalLogout();
+                    return;
+                }
+                window.location.href = 'index.html';
+            };
+
+            var originalOpenTriageCall = window.openTriageCall;
+            window.openTriageCall = function(name, room, cardEl) {
+                state.activeTriageCard = cardEl || (window.event && window.event.currentTarget ? window.event.currentTarget : null);
+                state.activeTriageCallId = state.activeTriageCard && state.activeTriageCard.getAttribute('data-call-id')
+                    ? state.activeTriageCard.getAttribute('data-call-id')
+                    : '';
+
+                if (typeof originalOpenTriageCall === 'function') {
+                    originalOpenTriageCall(name, room);
+                }
+            };
+
+            var originalSaveAndForward = window.saveAndForward;
+            window.saveAndForward = function() {
+                if (state.activeTriageCard && state.activeTriageCard.parentNode) {
+                    state.activeTriageCard.parentNode.removeChild(state.activeTriageCard);
+                    syncTriageBadge();
+                }
+                removePersistedDemoCall(state.activeTriageCallId);
+                state.activeTriageCard = null;
+                state.activeTriageCallId = '';
+
+                if (typeof originalSaveAndForward === 'function') {
+                    originalSaveAndForward();
+                    return;
+                }
+                showToast('Triagem salva e encaminhada com sucesso');
+            };
+
+            window.openInstallModal = openInstallModal;
+            window.closeInstallModal = closeInstallModal;
+            window.handleInstallModalAction = handleInstallModalAction;
+            window.requestCallNotifications = requestCallNotifications;
+            window.simulateIncomingCall = simulateIncomingCall;
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    syncLoggedUser();
+                    updateThemeColor();
+                    hydratePersistedDemoCalls();
+                    syncTriageBadge();
+                    bindServiceWorkerMessages();
+                    registerPwaShell();
+                    updatePwaUi();
+                    handleLaunchContext();
+                    maybeOpenInstallAfterLogin();
+                    maybeRunStandaloneDemo();
+                    document.addEventListener('pointerdown', unlockAlertAudio, { once: true });
+                });
+            } else {
+                syncLoggedUser();
+                updateThemeColor();
+                hydratePersistedDemoCalls();
+                syncTriageBadge();
+                bindServiceWorkerMessages();
+                registerPwaShell();
+                updatePwaUi();
+                handleLaunchContext();
+                maybeOpenInstallAfterLogin();
+                maybeRunStandaloneDemo();
+                document.addEventListener('pointerdown', unlockAlertAudio, { once: true });
+            }
+        })();
+    </script>
 </body>
 </html>
