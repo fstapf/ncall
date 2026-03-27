@@ -443,6 +443,10 @@ body {
     flex-wrap: wrap;
 }
 
+.btn-pwa-help {
+    display: none;
+}
+
 .pwa-assistant {
     display: flex;
     align-items: flex-start;
@@ -2607,15 +2611,33 @@ body.kiosk-mode .kiosk-header {
 @media (max-width: 768px) {
     .page-actions {
         width: 100%;
+        gap: 10px;
     }
 
     .page-actions .btn {
-        flex: 1 1 100%;
+        flex: 0 0 auto;
         justify-content: center;
     }
 
     .pwa-assistant {
-        padding: 14px;
+        display: none;
+    }
+
+    .btn-pwa-help {
+        display: inline-flex;
+    }
+
+    #btn-install-app {
+        display: none !important;
+    }
+
+    #btn-enable-notifications {
+        width: auto;
+    }
+
+    #btn-simulate-call {
+        flex: 1 1 100%;
+        width: 100%;
     }
 
     .pwa-install-grid {
