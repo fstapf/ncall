@@ -220,10 +220,8 @@
             if (user === 'enfermeira' && pass === 'enfermeira@2026!!') {
                 sessionStorage.setItem('ncall_auth', 'true');
                 sessionStorage.setItem('ncall_user', 'Enfermeira');
-                sessionStorage.setItem('ncall_prompt_install', 'true');
                 localStorage.setItem('ncall_auth_persist', 'true');
                 localStorage.setItem('ncall_user', 'Enfermeira');
-                localStorage.removeItem('ncall_install_prompt_dismissed');
                 window.location.href = 'app.html';
                 return false;
             }

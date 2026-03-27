@@ -147,33 +147,9 @@
                         <p class="page-subtitle">Chamadas aguardando atendimento</p>
                     </div>
                     <div class="page-actions">
-                        <button class="btn btn-ghost btn-pwa-help" id="btn-pwa-help" onclick="openInstallModal()">
-                            <span class="material-symbols-outlined">info</span>
-                            Como instalar
+                        <button class="icon-btn pwa-entry-btn" id="btn-pwa-panel" data-tooltip="Instalacao e alertas" aria-label="Instalacao e alertas" onclick="openInstallModal()">
+                            <span class="material-symbols-outlined">smartphone</span>
                         </button>
-                        <button class="btn btn-secondary" id="btn-install-app" onclick="openInstallModal()" hidden>
-                            <span class="material-symbols-outlined">download</span>
-                            Instalar app
-                        </button>
-                        <button class="btn btn-ghost" id="btn-enable-notifications" onclick="requestCallNotifications()">
-                            <span class="material-symbols-outlined">notifications</span>
-                            Ativar alertas
-                        </button>
-                        <button class="btn btn-primary" id="btn-simulate-call" onclick="simulateIncomingCall('manual')">
-                            <span class="material-symbols-outlined">add_call</span>
-                            Simular chamada
-                        </button>
-                    </div>
-                </div>
-
-                <div class="pwa-assistant" id="pwa-assistant">
-                    <div class="pwa-assistant-copy">
-                        <div class="pwa-assistant-title">Fluxo PWA para GitHub Pages</div>
-                        <p id="pwa-assistant-text">Abra este prototipo pela URL do GitHub Pages. Depois do login, o app pode pedir instalacao, habilitar notificacoes e simular uma nova chamada com som no app, notificacao nativa e vibracao quando houver suporte.</p>
-                    </div>
-                    <div class="pwa-assistant-status">
-                        <span class="status-pill status-moderate" id="pwa-install-status"><span class="dot"></span>Instalacao pendente</span>
-                        <span class="status-pill status-urgent" id="pwa-notification-status"><span class="dot"></span>Alertas inativos</span>
                     </div>
                 </div>
 
@@ -1277,6 +1253,11 @@
                     </div>
                 </div>
 
+                <div class="pwa-modal-status">
+                    <span class="status-pill status-moderate" id="pwa-install-status"><span class="dot"></span>Instalacao pendente</span>
+                    <span class="status-pill status-urgent" id="pwa-notification-status"><span class="dot"></span>Alertas inativos</span>
+                </div>
+
                 <div class="pwa-install-grid">
                     <div class="pwa-install-tip">
                         <span class="material-symbols-outlined">download</span>
@@ -1318,9 +1299,26 @@
                 </div>
 
                 <p class="pwa-install-note">Limite do prototipo: som customizado so e garantido com o app aberto. Com o app fechado, a exibicao real de notificacoes depende de Push API e de um backend, por exemplo via FCM.</p>
+
+                <div class="pwa-modal-lab">
+                    <div class="pwa-modal-lab-copy">
+                        <strong>Validacao do prototipo</strong>
+                        <span>As acoes de alerta e simulacao ficam aqui para nao poluir a tela principal.</span>
+                    </div>
+                    <div class="pwa-modal-actions">
+                        <button class="btn btn-ghost btn-sm" id="install-modal-notify" onclick="requestCallNotifications()">
+                            <span class="material-symbols-outlined">notifications</span>
+                            Ativar alertas
+                        </button>
+                        <button class="btn btn-secondary btn-sm" id="install-modal-simulate" onclick="triggerModalSimulation()">
+                            <span class="material-symbols-outlined">add_call</span>
+                            Simular chamada
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-ghost" onclick="closeInstallModal(true)">Agora nao</button>
+                <button class="btn btn-ghost" onclick="closeInstallModal(true)">Fechar</button>
                 <button class="btn btn-primary" id="install-modal-action" data-action="install" onclick="handleInstallModalAction()">Instalar agora</button>
             </div>
         </div>
@@ -1944,67 +1942,72 @@
             }
 
             function updatePwaUi() {
-                var installBtn = document.getElementById('btn-install-app');
-                var notifyBtn = document.getElementById('btn-enable-notifications');
+                var panelBtn = document.getElementById('btn-pwa-panel');
                 var installStatus = document.getElementById('pwa-install-status');
                 var notificationStatus = document.getElementById('pwa-notification-status');
-                var assistantText = document.getElementById('pwa-assistant-text');
+                var notifyAction = document.getElementById('install-modal-notify');
+                var simulateAction = document.getElementById('install-modal-simulate');
                 var installed = isStandalone();
                 var permission = hasNotificationSupport() ? Notification.permission : 'unsupported';
 
+                if (panelBtn) {
+                    var tooltip = 'Instalacao e alertas';
+                    if (!canUsePwaFeatures()) {
+                        tooltip = 'Abrir em HTTPS';
+                    } else if (installed && permission === 'granted') {
+                        tooltip = 'App instalado e alertas ativos';
+                    } else if (installed) {
+                        tooltip = 'App instalado';
+                    } else if (state.deferredInstallPrompt || isIosSafariInstallFlow()) {
+                        tooltip = 'Instalar app';
+                    }
+                    panelBtn.setAttribute('data-tooltip', tooltip);
+                    panelBtn.setAttribute('aria-label', tooltip);
+                    panelBtn.classList.toggle('is-pending', !installed || permission !== 'granted');
+                }
+
                 if (installed) {
                     setStatusPill(installStatus, 'status-routine', 'PWA instalado');
-                    if (installBtn) {
-                        installBtn.hidden = true;
-                    }
                 } else if (!canUsePwaFeatures()) {
                     setStatusPill(installStatus, 'status-emergency', 'Abrir em HTTPS');
-                    setButtonContent(installBtn, 'public', 'Abrir no GitHub Pages');
-                    if (installBtn) {
-                        installBtn.hidden = false;
-                    }
                 } else if (state.deferredInstallPrompt || isIosSafariInstallFlow()) {
                     setStatusPill(installStatus, 'status-moderate', 'Pronto para instalar');
-                    setButtonContent(installBtn, state.deferredInstallPrompt ? 'download' : 'info', state.deferredInstallPrompt ? 'Instalar app' : 'Como instalar');
-                    if (installBtn) {
-                        installBtn.hidden = false;
-                    }
                 } else {
                     setStatusPill(installStatus, 'status-moderate', 'Instalacao em preparacao');
-                    setButtonContent(installBtn, 'download', 'Instalar app');
-                    if (installBtn) {
-                        installBtn.hidden = false;
-                    }
                 }
 
                 if (permission === 'granted') {
                     setStatusPill(notificationStatus, 'status-routine', 'Alertas ativos');
-                    setButtonContent(notifyBtn, 'notifications_active', 'Alertas ativos');
                 } else if (permission === 'denied') {
                     setStatusPill(notificationStatus, 'status-emergency', 'Alertas bloqueados');
-                    setButtonContent(notifyBtn, 'notifications_off', 'Alertas bloqueados');
                 } else if (permission === 'unsupported') {
                     setStatusPill(notificationStatus, 'status-emergency', 'Sem notificacoes web');
-                    setButtonContent(notifyBtn, 'notifications_off', 'Sem notificacoes');
                 } else {
                     setStatusPill(notificationStatus, 'status-urgent', 'Alertas inativos');
-                    setButtonContent(notifyBtn, 'notifications', 'Ativar alertas');
                 }
 
-                if (assistantText) {
-                    if (!canUsePwaFeatures()) {
-                        assistantText.textContent = 'Para testar instalacao, notificacoes e service worker, abra este prototipo pela URL HTTPS do GitHub Pages.';
-                    } else if (installed && permission === 'granted') {
-                        assistantText.textContent = 'O app esta instalado e pronto para simular uma nova chamada com banner nativo, som no app aberto e vibracao quando o dispositivo permitir.';
-                    } else if (installed) {
-                        assistantText.textContent = 'O app ja esta instalado. Ative os alertas e depois use "Simular chamada" para validar o fluxo.';
-                    } else if (isIosSafariInstallFlow()) {
-                        assistantText.textContent = 'No iPhone e iPad, a instalacao continua manual pelo Safari: Compartilhar > Adicionar a Tela de Inicio.';
-                    } else if (state.deferredInstallPrompt) {
-                        assistantText.textContent = 'O navegador ja liberou o prompt nativo de instalacao. Instale o app e ative os alertas para ver o fluxo completo.';
+                if (notifyAction) {
+                    if (!installed) {
+                        setButtonContent(notifyAction, 'notifications', 'Ativar alertas');
+                        notifyAction.disabled = true;
+                    } else if (permission === 'granted') {
+                        setButtonContent(notifyAction, 'notifications_active', 'Alertas ativos');
+                        notifyAction.disabled = true;
+                    } else if (permission === 'denied') {
+                        setButtonContent(notifyAction, 'notifications_off', 'Alertas bloqueados');
+                        notifyAction.disabled = true;
+                    } else if (permission === 'unsupported') {
+                        setButtonContent(notifyAction, 'notifications_off', 'Sem notificacoes');
+                        notifyAction.disabled = true;
                     } else {
-                        assistantText.textContent = 'O prototipo esta preparado para GitHub Pages. Assim que o navegador liberar o prompt, instale o app e ative os alertas.';
+                        setButtonContent(notifyAction, 'notifications', 'Ativar alertas');
+                        notifyAction.disabled = false;
                     }
+                }
+
+                if (simulateAction) {
+                    setButtonContent(simulateAction, 'add_call', 'Simular chamada');
+                    simulateAction.disabled = !installed;
                 }
 
                 if (document.getElementById('install-modal').classList.contains('open')) {
@@ -2025,8 +2028,8 @@
                     copy.textContent = notificationPermission === 'granted'
                         ? 'O app ja esta instalado e com alertas ativos. Toque abaixo para disparar a simulacao de nova chamada.'
                         : 'O app ja esta instalado. Ative as notificacoes para receber o banner nativo da chamada simulada.';
-                    action.dataset.action = notificationPermission === 'granted' ? 'simulate' : 'notifications';
-                    action.textContent = notificationPermission === 'granted' ? 'Simular chamada' : 'Ativar alertas';
+                    action.dataset.action = 'close';
+                    action.textContent = 'Fechar';
                     return;
                 }
 
@@ -2068,10 +2071,6 @@
 
             function closeInstallModal(rememberChoice) {
                 document.getElementById('install-modal').classList.remove('open');
-                sessionStorage.removeItem('ncall_prompt_install');
-                if (rememberChoice) {
-                    localStorage.setItem('ncall_install_prompt_dismissed', 'true');
-                }
             }
 
             async function promptInstall() {
@@ -2111,18 +2110,16 @@
                     return;
                 }
 
-                if (action === 'notifications') {
-                    requestCallNotifications();
-                    return;
-                }
-
-                if (action === 'simulate') {
-                    closeInstallModal(false);
-                    simulateIncomingCall('install-modal');
-                    return;
-                }
-
                 closeInstallModal(false);
+            }
+
+            function triggerModalSimulation() {
+                if (!isStandalone()) {
+                    showToast('Instale o app para liberar a simulacao do fluxo PWA');
+                    return;
+                }
+                closeInstallModal(false);
+                simulateIncomingCall('install-modal');
             }
 
             async function requestCallNotifications() {
@@ -2425,12 +2422,6 @@
                 });
             }
 
-            function maybeOpenInstallAfterLogin() {
-                if (sessionStorage.getItem('ncall_prompt_install') === 'true' && !isStandalone()) {
-                    window.setTimeout(openInstallModal, 420);
-                }
-            }
-
             function updateUserThemeState() {
                 updateThemeColor();
                 updatePwaUi();
@@ -2440,9 +2431,6 @@
                 event.preventDefault();
                 state.deferredInstallPrompt = event;
                 updatePwaUi();
-                if (sessionStorage.getItem('ncall_prompt_install') === 'true') {
-                    window.setTimeout(openInstallModal, 280);
-                }
             });
 
             window.addEventListener('appinstalled', function() {
@@ -2465,7 +2453,6 @@
             window.logout = function() {
                 localStorage.removeItem('ncall_auth_persist');
                 localStorage.removeItem('ncall_user');
-                sessionStorage.removeItem('ncall_prompt_install');
                 if (typeof originalLogout === 'function') {
                     originalLogout();
                     return;
@@ -2507,6 +2494,7 @@
             window.handleInstallModalAction = handleInstallModalAction;
             window.requestCallNotifications = requestCallNotifications;
             window.simulateIncomingCall = simulateIncomingCall;
+            window.triggerModalSimulation = triggerModalSimulation;
 
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', function() {
@@ -2518,7 +2506,6 @@
                     registerPwaShell();
                     updatePwaUi();
                     handleLaunchContext();
-                    maybeOpenInstallAfterLogin();
                     maybeRunStandaloneDemo();
                     document.addEventListener('pointerdown', unlockAlertAudio, { once: true });
                 });
@@ -2531,7 +2518,6 @@
                 registerPwaShell();
                 updatePwaUi();
                 handleLaunchContext();
-                maybeOpenInstallAfterLogin();
                 maybeRunStandaloneDemo();
                 document.addEventListener('pointerdown', unlockAlertAudio, { once: true });
             }
